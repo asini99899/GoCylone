@@ -1,0 +1,63 @@
+# Build results
+bin/
+obj/
+Debug/
+Release/
+*.dll
+*.exe
+*.pdb
+
+# User-specific files
+*.user
+*.userosscache
+*.sln.docstates
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Visual Studio cache/options
+.vs/
+
+# Local database
+*.mdf
+*.ldf
+
+# NuGet
+*.nupkg
+*.snupkg
+.nuget/
+
+# Node modules (if any frontend build tools)
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Environment variables
+.env
+.env.local
+*.env
+
+# IDE
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Temporary files
+*.tmp
+temp/
+
+# Build folder
+build/
+dist/
+
+# appsettings with local connection strings (keep only appsettings.json)
+appsettings.Development.json

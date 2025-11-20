@@ -1,0 +1,29 @@
+name: GoCylone
+
+services:
+  - type: web
+    name: gocylone
+    runtime: dotnet
+    buildCommand: dotnet publish -c Release -o out
+    startCommand: dotnet out/GoCylone.dll
+    envs:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: PORT
+        value: "8080"
+
+  - type: postgres
+    name: gocylone-db
+    version: "15"
+    plan: starter
+    envs:
+      - key: POSTGRES_USER
+        value: postgres
+      - key: POSTGRES_DB
+        value: gocylone
+
+envs:
+  - key: DATABASE_URL
+    fromService:
+      name: gocylone-db
+      property: DATABASE_URL

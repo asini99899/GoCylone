@@ -1,0 +1,515 @@
+@model Booking
+
+@{
+    ViewData["Title"] = "Booking Confirmed";
+}
+
+<style>
+    .success-container {
+        background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 30px;
+    }
+
+    .success-card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        padding: 40px;
+        max-width: 600px;
+        width: 100%;
+    }
+
+    .success-icon {
+        width: 80px;
+        height: 80px;
+        background: #4caf50;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 40px;
+        margin: 0 auto 20px;
+    }
+
+    .success-title {
+        color: #4caf50;
+        font-size: 32px;
+        font-weight: bold;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .success-subtitle {
+        color: #666;
+        text-align: center;
+        margin-bottom: 30px;
+        font-size: 16px;
+    }
+
+    .confirmation-details {
+        background: #f5f5f5;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+    }
+
+    .detail-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .detail-row:last-child {
+        border-bottom: none;
+    }
+
+    .detail-label {
+        color: #666;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .detail-value {
+        color: #333;
+        font-weight: bold;
+        font-size: 14px;
+    }
+
+    .booking-summary {
+        background: #e8f5e9;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+        border-left: 4px solid #4caf50;
+    }
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 15px;
+    }
+
+    .summary-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .summary-label {
+        font-size: 12px;
+        color: #666;
+        text-transform: uppercase;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    .summary-value {
+        font-size: 14px;
+        color: #4caf50;
+        font-weight: bold;
+    }
+
+    .seats-info {
+        background: #e3f2fd;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        border-left: 4px solid #2196f3;
+    }
+
+    .seats-info-title {
+        font-weight: bold;
+        color: #2196f3;
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+
+    .seats-info-list {
+        color: #333;
+        font-weight: 600;
+        font-size: 14px;
+    }
+
+    .fare-info {
+        background: #fff3e0;
+        padding: 15px;
+        border-radius: 5px;
+        border-left: 4px solid #ff9800;
+    }
+
+    .fare-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 8px;
+        font-size: 14px;
+    }
+
+    .fare-row:last-child {
+        margin-bottom: 0;
+        font-weight: bold;
+        color: #f57c00;
+        font-size: 16px;
+        padding-top: 8px;
+        border-top: 1px solid #ffe0b2;
+    }
+
+    .buttons-section {
+        display: flex;
+        gap: 15px;
+    }
+
+    .btn {
+        padding: 12px 30px;
+        border: none;
+        border-radius: 5px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 16px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+        color: white;
+        flex: 1;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+    }
+
+    .btn-secondary {
+        background: #f5f5f5;
+        color: #333;
+        border: 2px solid #ddd;
+    }
+
+    .btn-secondary:hover {
+        background: #e0e0e0;
+    }
+
+    .confirmation-number {
+        text-align: center;
+        margin-bottom: 20px;
+        padding: 15px;
+        background: #fff3e0;
+        border-radius: 5px;
+        border-left: 4px solid #ff9800;
+    }
+
+    .confirmation-number-label {
+        font-size: 12px;
+        color: #666;
+        text-transform: uppercase;
+        font-weight: 600;
+    }
+
+    .confirmation-number-value {
+        font-size: 18px;
+        color: #f57c00;
+        font-weight: bold;
+    }
+
+    .qr-section {
+        background: #f5f5f5;
+        padding: 30px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+        text-align: center;
+        border: 2px dashed #ddd;
+    }
+
+    .qr-title {
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 20px;
+        font-size: 16px;
+    }
+
+    #qrCode {
+        display: inline-block;
+        padding: 15px;
+        background: white;
+        border-radius: 8px;
+    }
+
+    .qr-info {
+        font-size: 12px;
+        color: #666;
+        margin-top: 15px;
+        font-style: italic;
+    }
+
+    @@media print {
+        body {
+            background: white;
+            padding: 0;
+            margin: 0;
+        }
+
+        .success-container {
+            background: white;
+            padding: 0;
+            min-height: auto;
+            display: block;
+        }
+
+        .success-card {
+            max-width: 100%;
+            padding: 10px;
+            box-shadow: none;
+            page-break-inside: avoid;
+        }
+
+        .success-icon {
+            width: 40px;
+            height: 40px;
+            margin: 0 auto 10px;
+            font-size: 20px;
+        }
+
+        .success-title {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .success-subtitle {
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+
+        .confirmation-number {
+            margin-bottom: 10px;
+            padding: 10px;
+        }
+
+        .confirmation-details,
+        .booking-summary,
+        .seats-info,
+        .fare-info,
+        .qr-section {
+            padding: 10px;
+            margin-bottom: 10px;
+            page-break-inside: avoid;
+        }
+
+        .detail-label,
+        .summary-label,
+        .seats-info-title,
+        .qr-title {
+            font-size: 10px;
+        }
+
+        .detail-value,
+        .summary-value,
+        .seats-info-list,
+        .fare-row {
+            font-size: 11px;
+        }
+
+        .success-title,
+        .confirmation-number-value {
+            font-size: 14px;
+        }
+
+        .buttons-section {
+            display: none;
+        }
+
+        .qr-section {
+            border: 1px solid #ddd;
+            background: white;
+        }
+
+        #qrCode {
+            padding: 8px;
+        }
+
+        .qr-info {
+            font-size: 10px;
+        }
+    }
+</style>
+
+<div class="success-container">
+    <div class="success-card">
+        <div class="success-icon">✓</div>
+        <h1 class="success-title" data-translate="booking_confirmed">Booking Confirmed!</h1>
+        <p class="success-subtitle" data-translate="ticket_booked">Your bus ticket has been successfully booked</p>
+
+        <div class="confirmation-number">
+            <div class="confirmation-number-label" data-translate="booking_reference">Booking Reference Number</div>
+            <div class="confirmation-number-value">BK-@Model.BookingId-@Model.BookingDate.ToString("yyMMdd")</div>
+        </div>
+
+        <!-- Booking Details -->
+        <div class="confirmation-details">
+            <div class="detail-row">
+                <span class="detail-label" data-translate="booking_id">Booking ID</span>
+                <span class="detail-value">#@Model.BookingId</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label" data-translate="bus_number_label">Bus Number</span>
+                <span class="detail-value">@Model.Schedule?.Bus?.NumberPlate</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label" data-translate="status">Status</span>
+                <span class="detail-value" style="color: #4caf50;">✓ @Model.Status</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label" data-translate="booking_datetime">Booking Date & Time</span>
+                <span class="detail-value">@Model.BookingDate.ToString("dd MMM yyyy, hh:mm tt")</span>
+            </div>
+        </div>
+
+        <!-- Route & Time Summary -->
+        <div class="booking-summary">
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <span class="summary-label" data-translate="from">From</span>
+                    <span class="summary-value">@Model.Schedule?.Route?.FromLocation</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label" data-translate="to">To</span>
+                    <span class="summary-value">@Model.Schedule?.Route?.ToLocation</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label" data-translate="departure_label">Departure</span>
+                    <span class="summary-value">@Model.Schedule?.DepartureTime.ToString(@"hh\:mm")</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label" data-translate="travel_date">Travel Date</span>
+                    <span class="summary-value">@Model.Schedule?.ScheduledDate.ToString("dd MMM yyyy")</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Seats Info -->
+        <div class="seats-info">
+            <div class="seats-info-title" data-translate="booked_seats">Booked Seats (@Model.BookingSeats.Count)</div>
+            <div class="seats-info-list">
+                @string.Join(", ", Model.BookingSeats.Select(bs => bs.SeatNumber).OrderBy(s => s))
+            </div>
+        </div>
+
+        <!-- Boarding & Drop Info -->
+        <div class="confirmation-details" style="margin-bottom: 30px;">
+            <div class="detail-row">
+                <span class="detail-label" data-translate="pickup_location_label">Pickup Location</span>
+                <span class="detail-value">@Model.PickupLocation</span>
+            </div>
+            <div class="detail-row">
+                <span class="detail-label" data-translate="drop_location_label">Drop Location</span>
+                <span class="detail-value">@Model.DropLocation</span>
+            </div>
+        </div>
+
+        <!-- Fare Summary -->
+        <div class="fare-info">
+            <div class="fare-row">
+                <span data-translate="seats">Number of Seats</span>
+                <span>@Model.NumberOfSeats</span>
+            </div>
+            <div class="fare-row">
+                <span data-translate="total_price">Total Fare</span>
+                <span>Rs. @Model.TotalFare.ToString("F2")</span>
+            </div>
+        </div>
+
+        <!-- QR Code Section -->
+        <div class="qr-section">
+            <div class="qr-title" data-translate="qr_code">QR Code for Bus Entry</div>
+            <div id="qrCode"></div>
+            <div class="qr-info" data-translate="qr_scan_info">Show this QR code to the bus conductor during boarding</div>
+        </div>
+
+        <!-- Actions -->
+        <div class="buttons-section" style="margin-top: 30px;">
+            <button class="btn btn-secondary" onclick="window.print()" data-translate-value="print_ticket">🖨️ Print Ticket</button>
+            <button class="btn btn-primary" onclick="window.location.href='/'" data-translate-value="back_to_home">Back to Home</button>
+        </div>
+    </div>
+</div>
+
+<print-only>
+    <style>
+        @@media print {
+            body {
+                background: white;
+            }
+
+            .buttons-section {
+                display: none;
+            }
+        }
+    </style>
+</print-only>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<script>
+    // Booking data
+    const bookingData = {
+        bookingId: @Model.BookingId,
+        reference: 'BK-@Model.BookingId-@Model.BookingDate.ToString("yyMMdd")',
+        busNumber: '@Model.Schedule?.Bus?.NumberPlate',
+        fromLocation: '@Model.Schedule?.Route?.FromLocation',
+        toLocation: '@Model.Schedule?.Route?.ToLocation',
+        departureTime: '@Model.Schedule?.DepartureTime.ToString(@"hh\:mm")',
+        travelDate: '@Model.Schedule?.ScheduledDate.ToString("dd/MM/yyyy")',
+        seats: '@string.Join(",", Model.BookingSeats.Select(bs => bs.SeatNumber).OrderBy(s => s))',
+        pickupLocation: '@Model.PickupLocation',
+        dropLocation: '@Model.DropLocation',
+        totalFare: '@Model.TotalFare.ToString("F2")',
+        numberOfSeats: @Model.NumberOfSeats,
+        status: '@Model.Status'
+    };
+
+    // Generate QR Code with all essential data
+    function generateQRCode() {
+        // Create a comprehensive data string for QR code
+        const qrData = `GOCYLONE_BOOKING
+BookingID: ${bookingData.bookingId}
+Reference: ${bookingData.reference}
+Bus: ${bookingData.busNumber}
+From: ${bookingData.fromLocation}
+To: ${bookingData.toLocation}
+Departure: ${bookingData.departureTime}
+Date: ${bookingData.travelDate}
+Seats: ${bookingData.seats}
+Pickup: ${bookingData.pickupLocation}
+Drop: ${bookingData.dropLocation}
+Fare: Rs.${bookingData.totalFare}
+Status: ${bookingData.status}`;
+
+        // Clear previous QR code if any
+        const qrContainer = document.getElementById('qrCode');
+        qrContainer.innerHTML = '';
+
+        // Generate new QR code
+        new QRCode(qrContainer, {
+            text: qrData,
+            width: 250,
+            height: 250,
+            correctLevel: QRCode.CorrectLevel.H,
+            colorDark: "#000000",
+            colorLight: "#ffffff",
+        });
+    }
+
+    // Initialize on page load
+    window.addEventListener('DOMContentLoaded', () => {
+        // Generate QR code
+        generateQRCode();
+
+        // Translate page
+        if (typeof translatePage === 'function') {
+            translatePage();
+        }
+    });
+</script>

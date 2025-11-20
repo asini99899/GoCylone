@@ -1,0 +1,867 @@
+@model SelectSeatsViewModel
+
+@{
+    ViewData["Title"] = "Select Seats";
+}
+
+<style>
+    .booking-container {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 30px 0;
+    }
+
+    .booking-card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        padding: 30px;
+        margin-bottom: 30px;
+    }
+
+    .booking-title {
+        color: #667eea;
+        font-size: 28px;
+        font-weight: bold;
+        margin-bottom: 20px;
+    }
+
+    .route-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 20px;
+    }
+
+    .route-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .route-label {
+        font-size: 12px;
+        opacity: 0.9;
+        text-transform: uppercase;
+    }
+
+    .route-value {
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .seats-section {
+        margin-bottom: 40px;
+    }
+
+    .seats-title {
+        font-size: 20px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    .bus-layout {
+        display: inline-block;
+        background: #f5f5f5;
+        padding: 30px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+
+    .seats-grid {
+        display: grid;
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .seat-row {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        align-items: center;
+    }
+
+    .seat-row-label {
+        width: 30px;
+        font-weight: bold;
+        text-align: right;
+        color: #666;
+        margin-right: 10px;
+    }
+
+    .seat-pair {
+        display: flex;
+        gap: 8px;
+        align-items: center;
+    }
+
+    .aisle {
+        width: 40px;
+        text-align: center;
+    }
+
+    .seat {
+        width: 50px;
+        height: 50px;
+        border: 2px solid #ddd;
+        border-radius: 5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        background: white;
+        font-weight: bold;
+        transition: all 0.3s;
+        font-size: 12px;
+        outline: none;
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+    }
+
+    .seat:focus {
+        outline: none;
+        box-shadow: none;
+    }
+
+    .seat:hover:not(.booked):not(.driver):not(.window) {
+        border-color: #667eea;
+        transform: scale(1.05);
+    }
+
+    .seat.available {
+        background: #e8f5e9;
+        border-color: #4caf50;
+        color: #4caf50;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .seat.available:hover {
+        transform: scale(1.1);
+        box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+        border-color: #388e3c;
+    }
+
+    .seat.available.selected {
+        background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+        color: white;
+        border-color: #2e7d32;
+        box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
+        transform: scale(1.08);
+        font-weight: bold;
+        animation: seatSelected 0.4s ease-out;
+    }
+
+    .seat.booked {
+        background: #ffebee;
+        border-color: #f44336;
+        color: #f44336;
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+    .seat.processing {
+        background: #fff176;
+        border-color: #f9a825;
+        color: #f57f17;
+        cursor: not-allowed;
+        opacity: 0.7;
+        animation: pulse 1.5s infinite;
+    }
+
+    @@keyframes pulse {
+
+        0%,
+        100% {
+            opacity: 0.7;
+        }
+
+        50% {
+            opacity: 0.9;
+        }
+    }
+
+    @@keyframes seatSelected {
+        0% {
+            transform: scale(0.9);
+            opacity: 0.7;
+        }
+
+        50% {
+            transform: scale(1.15);
+        }
+
+        100% {
+            transform: scale(1.08);
+            opacity: 1;
+        }
+    }
+
+    .seat.driver {
+        background: #fff3e0;
+        border-color: #ff9800;
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+    .legend {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        margin-top: 20px;
+        padding: 20px;
+        background: #f5f5f5;
+        border-radius: 10px;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .legend-seat {
+        width: 30px;
+        height: 30px;
+        border: 2px solid;
+        border-radius: 3px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+    }
+
+    .legend-text {
+        font-size: 14px;
+        color: #333;
+    }
+
+    .boarding-section {
+        background: #f9f9f9;
+        padding: 20px;
+        border-radius: 10px;
+        margin-top: 30px;
+    }
+
+    .boarding-title {
+        font-size: 18px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 15px;
+    }
+
+    .boarding-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .boarding-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .boarding-label {
+        font-size: 12px;
+        color: #666;
+        text-transform: uppercase;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .boarding-select {
+        padding: 12px;
+        border: 2px solid #ddd;
+        border-radius: 5px;
+        font-size: 14px;
+        background: white;
+        cursor: pointer;
+    }
+
+    .boarding-select:focus {
+        border-color: #667eea;
+        outline: none;
+    }
+
+    .buttons-section {
+        display: flex;
+        gap: 15px;
+        margin-top: 30px;
+    }
+
+    .btn {
+        padding: 12px 30px;
+        border: none;
+        border-radius: 5px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 16px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        flex: 1;
+        font-size: 18px;
+        padding: 16px 30px;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-primary:disabled {
+        background: #ccc;
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+        box-shadow: none;
+    }
+
+    .btn-primary:active:not(:disabled) {
+        transform: translateY(0px);
+    }
+
+    .btn-secondary {
+        background: #f5f5f5;
+        color: #333;
+        border: 2px solid #ddd;
+    }
+
+    .btn-secondary:hover {
+        background: #e0e0e0;
+    }
+
+    .selected-seats {
+        background: #e8f5e9;
+        padding: 15px;
+        border-radius: 5px;
+        margin-top: 20px;
+        display: none;
+    }
+
+    .selected-seats.show {
+        display: block;
+    }
+
+    .selected-seats-title {
+        font-weight: bold;
+        color: #4caf50;
+        margin-bottom: 10px;
+    }
+
+    .selected-seats-list {
+        color: #333;
+        font-weight: 600;
+    }
+
+    .price-info {
+        background: #fff3e0;
+        padding: 15px;
+        border-radius: 5px;
+        margin-top: 15px;
+        border-left: 4px solid #ff9800;
+        display: none;
+    }
+
+    .price-info.show {
+        display: block;
+    }
+
+    .price-text {
+        font-size: 16px;
+        color: #f57c00;
+        font-weight: bold;
+    }
+
+    .error-msg {
+        background: #ffebee;
+        border: 1px solid #f5c6cb;
+        color: #c62828;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        display: none;
+    }
+
+    .error-msg.show {
+        display: block;
+    }
+</style>
+
+<div class="booking-container">
+    <div class="container">
+        <div class="booking-card">
+            <h1 class="booking-title" data-translate="select_your_seats">🚌 Select Your Seats</h1>
+
+            <div class="route-header">
+                <div class="route-item">
+                    <span class="route-label" data-translate="from_location">From</span>
+                    <span class="route-value">@Model.FromLocation</span>
+                </div>
+                <div class="route-item">
+                    <span class="route-label" data-translate="to_location">To</span>
+                    <span class="route-value">@Model.ToLocation</span>
+                </div>
+                <div class="route-item">
+                    <span class="route-label" data-translate="departure_time">Departure</span>
+                    <span class="route-value">@Model.DepartureTime.ToString(@"hh\:mm")</span>
+                </div>
+                <div class="route-item">
+                    <span class="route-label" data-translate="bus_number">Bus</span>
+                    <span class="route-value">@Model.BusNumberPlate</span>
+                </div>
+            </div>
+
+            <div class="error-msg" id="errorMsg"></div>
+
+            <div class="seats-section">
+                <h3 class="seats-title" data-translate="available_seats">Available Seats</h3>
+
+                <div class="bus-layout">
+                    <div class="seats-grid" id="seatsGrid"></div>
+
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-seat"
+                                style="background: #e8f5e9; border-color: #4caf50; color: #4caf50;">A</div>
+                            <span class="legend-text" data-translate="available">Available</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-seat" style="background: #4caf50; border-color: #4caf50; color: white;">✓
+                            </div>
+                            <span class="legend-text" data-translate="selected_hold">Selected (Hold)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-seat"
+                                style="background: #fff176; border-color: #f9a825; color: #f57f17;">⏱</div>
+                            <span class="legend-text" data-translate="processing">Processing (20min)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-seat"
+                                style="background: #ffebee; border-color: #f44336; color: #f44336;">X</div>
+                            <span class="legend-text" data-translate="booked">Booked</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-seat" style="background: #fff3e0; border-color: #ff9800;">D</div>
+                            <span class="legend-text" data-translate="driver">Driver</span>
+                        </div>
+                    </div>
+
+                    <div id="seatSelectionGuide"
+                        style="text-align: center; padding: 20px; background: #e3f2fd; border-radius: 8px; margin-top: 20px; color: #1976d2; font-weight: 500;"
+                        data-translate="seat_selection_guide">
+                        👆 Click on available seats to select them. At least 1 seat required to proceed.
+                    </div>
+                </div>
+
+                <div class="selected-seats" id="selectedSeatsDisplay">
+                    <div class="selected-seats-title" data-translate="selected_seats">Selected Seats:</div>
+                    <div class="selected-seats-list" id="selectedSeatsList"></div>
+                </div>
+
+                <div class="price-info" id="priceInfo">
+                    <div class="price-text" id="priceText" data-translate="total_fare">Total Fare: Rs. 0.00</div>
+                </div>
+            </div>
+
+            <div class="boarding-section">
+                <h3 class="boarding-title" data-translate="boarding_drop">Boarding & Drop Location</h3>
+                <div class="boarding-grid">
+                    <div class="boarding-item">
+                        <label class="boarding-label" data-translate="pickup_location">Pickup Location
+                            (Boarding)</label>
+                        <input type="text" class="boarding-select" id="pickupLocation" value="@Model.FromLocation"
+                            data-translate-placeholder="where_to_pickup">
+                    </div>
+                    <div class="boarding-item">
+                        <label class="boarding-label" data-translate="drop_location">Drop Location</label>
+                        <input type="text" class="boarding-select" id="dropLocation" value="@Model.ToLocation"
+                            data-translate-placeholder="where_to_drop">
+                    </div>
+                </div>
+            </div>
+
+            <div class="buttons-section">
+                <button class="btn btn-secondary" onclick="window.history.back()"
+                    data-translate-value="back">Back</button>
+                <button class="btn btn-primary" id="proceedBtn" onclick="proceedToPayment()"
+                    data-translate-value="proceed_to_payment">
+                    Proceed to Payment
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const scheduleId = @Model.ScheduleId;
+    const seatStructure = '@Model.SeatStructure'; // "2*2" or "2*3"
+    const totalSeats = @Model.TotalSeats;
+    const bookedSeats = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.BookedSeats));
+    const processingSeats = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.ProcessingSeats));
+
+    let selectedSeats = [];
+    let holdExpiryTime = null;
+    let countdownInterval = null;
+    const PRICE_PER_SEAT = 100; // Default price
+
+    // Generate seat layout based on structure (2*2, 2*3, etc)
+    function generateSeats() {
+        const seatsGrid = document.getElementById('seatsGrid');
+        seatsGrid.innerHTML = '';
+
+        const [seatsPerRow, numRows] = seatStructure.split('*').map(Number);
+
+        // Calculate actual number of rows needed based on totalSeats
+        // For 40 seats with 2 seats per side: 40 / (2 per side * 2 sides) = 10 rows
+        const seatsPerSide = seatsPerRow;
+        const seatsPerRowTotal = seatsPerSide * 2; // left side + right side
+        const calculatedRows = Math.ceil(totalSeats / seatsPerRowTotal);
+        const rowsToDisplay = Math.max(calculatedRows, numRows); // Use calculated or specified, whichever is larger
+
+        let seatNumber = 1;
+
+        // For 2*2 structure: create 2 seats per side with aisle in middle
+        // For 2*3 structure: create 3 seats per side with aisle in middle
+        // For 40 seats: will create 10 rows (2*2 with 40 seats = 10 rows needed)
+
+        // Create rows
+        for (let row = 1; row <= rowsToDisplay; row++) {
+            const rowDiv = document.createElement('div');
+            rowDiv.className = 'seat-row';
+
+            const rowLabel = document.createElement('div');
+            rowLabel.className = 'seat-row-label';
+            rowLabel.textContent = String.fromCharCode(64 + row); // A, B, C, D...
+            rowDiv.appendChild(rowLabel);
+
+            // LEFT SIDE seats
+            const leftSide = document.createElement('div');
+            leftSide.className = 'seat-pair';
+
+            for (let i = 0; i < seatsPerSide; i++) {
+                if (seatNumber > totalSeats) break;
+
+                const seatDiv = document.createElement('div');
+                seatDiv.dataset.seatNumber = seatNumber;
+                seatDiv.id = `seat-${seatNumber}`;
+
+                // Set seat status
+                if (seatNumber === 1) {
+                    seatDiv.className = 'seat driver';
+                    seatDiv.textContent = 'D';
+                    seatDiv.onclick = null;
+                } else if (bookedSeats.includes(seatNumber)) {
+                    seatDiv.className = 'seat booked';
+                    seatDiv.textContent = 'X';
+                    seatDiv.onclick = null;
+                } else if (processingSeats.includes(seatNumber)) {
+                    seatDiv.className = 'seat processing';
+                    seatDiv.textContent = '⏱';
+                    seatDiv.onclick = null;
+                    seatDiv.title = 'Being held by another user (20 min)';
+                } else {
+                    seatDiv.className = 'seat available';
+                    seatDiv.textContent = seatNumber;
+                    seatDiv.style.cursor = 'pointer';
+                    seatDiv.style.userSelect = 'none';
+
+                    // Single click handler
+                    seatDiv.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        toggleSeat(seatNumber);
+                    });
+
+                    // Double click handler (also toggles seat)
+                    seatDiv.addEventListener('dblclick', function (e) {
+                        e.preventDefault();
+                        toggleSeat(seatNumber);
+                    });
+
+                    // Hover effect
+                    seatDiv.addEventListener('mouseenter', function () {
+                        if (!seatElement.classList.contains('selected')) {
+                            this.style.transform = 'scale(1.1)';
+                            this.style.boxShadow = '0 0 8px rgba(102, 126, 234, 0.5)';
+                        }
+                    });
+
+                    seatDiv.addEventListener('mouseleave', function () {
+                        this.style.transform = 'scale(1)';
+                        this.style.boxShadow = 'none';
+                    });
+                }
+
+                leftSide.appendChild(seatDiv);
+                seatNumber++;
+            }
+            rowDiv.appendChild(leftSide);
+
+            // AISLE (gap in middle)
+            const aisle = document.createElement('div');
+            aisle.className = 'aisle';
+            aisle.innerHTML = '║';
+            rowDiv.appendChild(aisle);
+
+            // RIGHT SIDE seats
+            const rightSide = document.createElement('div');
+            rightSide.className = 'seat-pair';
+
+            for (let i = 0; i < seatsPerSide; i++) {
+                if (seatNumber > totalSeats) break;
+
+                const seatDiv = document.createElement('div');
+                seatDiv.dataset.seatNumber = seatNumber;
+                seatDiv.id = `seat-${seatNumber}`;
+
+                // Set seat status
+                if (seatNumber === 1) {
+                    seatDiv.className = 'seat driver';
+                    seatDiv.textContent = 'D';
+                    seatDiv.onclick = null;
+                } else if (bookedSeats.includes(seatNumber)) {
+                    seatDiv.className = 'seat booked';
+                    seatDiv.textContent = 'X';
+                    seatDiv.onclick = null;
+                } else if (processingSeats.includes(seatNumber)) {
+                    seatDiv.className = 'seat processing';
+                    seatDiv.textContent = '⏱';
+                    seatDiv.onclick = null;
+                    seatDiv.title = 'Being held by another user (20 min)';
+                } else {
+                    seatDiv.className = 'seat available';
+                    seatDiv.textContent = seatNumber;
+                    seatDiv.style.cursor = 'pointer';
+                    seatDiv.style.userSelect = 'none';
+
+                    // Single click handler
+                    seatDiv.addEventListener('click', function (e) {
+                        e.preventDefault();
+                        toggleSeat(seatNumber);
+                    });
+
+                    // Double click handler (also toggles seat)
+                    seatDiv.addEventListener('dblclick', function (e) {
+                        e.preventDefault();
+                        toggleSeat(seatNumber);
+                    });
+
+                    // Hover effect
+                    seatDiv.addEventListener('mouseenter', function () {
+                        if (!seatDiv.classList.contains('selected')) {
+                            this.style.transform = 'scale(1.1)';
+                            this.style.boxShadow = '0 0 8px rgba(102, 126, 234, 0.5)';
+                        }
+                    });
+
+                    seatDiv.addEventListener('mouseleave', function () {
+                        this.style.transform = 'scale(1)';
+                        this.style.boxShadow = 'none';
+                    });
+                }
+
+                rightSide.appendChild(seatDiv);
+                seatNumber++;
+            }
+            rowDiv.appendChild(rightSide);
+
+            seatsGrid.appendChild(rowDiv);
+        }
+    }
+
+    // Toggle seat selection
+    function toggleSeat(seatNumber) {
+        const seatElement = document.getElementById(`seat-${seatNumber}`);
+
+        if (seatElement.classList.contains('selected')) {
+            seatElement.classList.remove('selected');
+            seatElement.textContent = seatNumber;
+            selectedSeats = selectedSeats.filter(s => s !== seatNumber);
+        } else {
+            seatElement.classList.add('selected');
+            seatElement.textContent = '✓';
+            selectedSeats.push(seatNumber);
+        }
+
+        console.log('Selected seats:', selectedSeats);
+        updateUI();
+
+        // Automatically hold selected seats if more than 0
+        if (selectedSeats.length > 0 && !holdExpiryTime) {
+            holdSeatsTemporarily();
+        }
+    }
+
+    // Hold seats temporarily (20 min)
+    function holdSeatsTemporarily() {
+        fetch('/Booking/HoldSeats', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                scheduleId: scheduleId,
+                selectedSeats: selectedSeats
+            })
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    holdExpiryTime = new Date(data.expiryTime);
+                    console.log('Seats held until:', holdExpiryTime);
+                    startCountdown();
+                } else {
+                    showError(data.message);
+                    // Deselect seats if hold failed
+                    selectedSeats = [];
+                    document.querySelectorAll('.seat.selected').forEach(s => s.classList.remove('selected'));
+                    updateUI();
+                }
+            })
+            .catch(err => {
+                console.error('Error holding seats:', err);
+                showError('Error holding seats. Please try again.');
+            });
+    }
+
+    // Start countdown timer for hold expiry
+    function startCountdown() {
+        if (countdownInterval) clearInterval(countdownInterval);
+
+        countdownInterval = setInterval(() => {
+            const now = new Date();
+            const timeLeft = Math.floor((holdExpiryTime - now) / 1000);
+
+            if (timeLeft <= 0) {
+                clearInterval(countdownInterval);
+                showWarning('Hold expired! Please book immediately or seats will be released.');
+                holdExpiryTime = null;
+            } else {
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                const timeDisplay = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                document.getElementById('priceText').textContent =
+                    `Total Fare: Rs. ${(selectedSeats.length * PRICE_PER_SEAT).toFixed(2)} (Hold expires: ${timeDisplay})`;
+            }
+        }, 1000);
+    }
+
+    // Release hold when page unloads or user deselects all
+    function releaseHoldIfNeeded() {
+        if (selectedSeats.length === 0 && holdExpiryTime) {
+            fetch('/Booking/ReleaseHold', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    scheduleId: scheduleId,
+                    seatNumbers: selectedSeats
+                })
+            }).catch(err => console.error('Error releasing hold:', err));
+
+            holdExpiryTime = null;
+            if (countdownInterval) clearInterval(countdownInterval);
+        }
+    }
+
+    // Update UI based on selected seats
+    function updateUI() {
+        const selectedSeatsDisplay = document.getElementById('selectedSeatsDisplay');
+        const selectedSeatsList = document.getElementById('selectedSeatsList');
+        const priceInfo = document.getElementById('priceInfo');
+        const priceText = document.getElementById('priceText');
+        const proceedBtn = document.getElementById('proceedBtn');
+
+        console.log('updateUI called with selectedSeats:', selectedSeats);
+
+        // Always enable the proceed button (seat selection is optional)
+        proceedBtn.disabled = false;
+        proceedBtn.style.cursor = 'pointer';
+        proceedBtn.style.opacity = '1';
+
+        if (selectedSeats.length > 0) {
+            selectedSeatsDisplay.classList.add('show');
+            selectedSeatsList.textContent = selectedSeats.sort((a, b) => a - b).join(', ');
+
+            const totalFare = selectedSeats.length * PRICE_PER_SEAT;
+            if (holdExpiryTime) {
+                const now = new Date();
+                const timeLeft = Math.floor((holdExpiryTime - now) / 1000);
+                const minutes = Math.floor(timeLeft / 60);
+                const seconds = timeLeft % 60;
+                priceText.textContent = `Total Fare: Rs. ${totalFare.toFixed(2)} (Hold expires: ${minutes}:${seconds < 10 ? '0' : ''}${seconds})`;
+            } else {
+                priceText.textContent = `Total Fare: Rs. ${totalFare.toFixed(2)}`;
+            }
+            priceInfo.classList.add('show');
+
+            console.log('Seats selected - showing price info');
+        } else {
+            selectedSeatsDisplay.classList.remove('show');
+            priceInfo.classList.remove('show');
+            console.log('No seats selected - button still enabled');
+        }
+    }
+
+    // Proceed to payment
+    function proceedToPayment() {
+        const pickup = document.getElementById('pickupLocation').value.trim();
+        const drop = document.getElementById('dropLocation').value.trim();
+
+        if (!pickup || !drop) {
+            showError('Please enter pickup and drop locations');
+            return;
+        }
+
+        // Convert selected seats to integers and sort them
+        const seatNumbers = selectedSeats.length > 0 
+            ? selectedSeats.map(s => parseInt(s)).sort((a, b) => a - b).join(',')
+            : '';
+
+        console.log('Proceeding with seats:', seatNumbers, 'Number of seats:', selectedSeats.length);
+
+        // Only pass seats if any are selected, otherwise use empty string
+        const seatsParam = seatNumbers ? `&seats=${seatNumbers}` : '';
+        window.location.href = `/Booking/ConfirmBooking/${scheduleId}?pickup=${encodeURIComponent(pickup)}&drop=${encodeURIComponent(drop)}${seatsParam}`;
+    }
+
+    // Show error message
+    function showError(message) {
+        const errorMsg = document.getElementById('errorMsg');
+        errorMsg.textContent = message;
+        errorMsg.classList.add('show');
+        setTimeout(() => {
+            errorMsg.classList.remove('show');
+        }, 4000);
+    }
+
+    // Show warning message
+    function showWarning(message) {
+        const errorMsg = document.getElementById('errorMsg');
+        errorMsg.textContent = '⚠️ ' + message;
+        errorMsg.classList.add('show');
+    }
+
+    // Initialize
+    window.addEventListener('DOMContentLoaded', () => {
+        generateSeats();
+        // Translate page after DOM is ready
+        if (typeof translatePage === 'function') {
+            translatePage();
+        }
+    });
+
+    // Release hold when leaving page
+    window.addEventListener('beforeunload', () => {
+        if (countdownInterval) clearInterval(countdownInterval);
+    });
+</script>

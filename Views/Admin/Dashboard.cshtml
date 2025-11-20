@@ -1,0 +1,93 @@
+@{
+    ViewData["Title"] = "Admin Dashboard - GoCeylon";
+    Layout = "_AdminLayout";
+}
+
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="admin-section-title">
+                📊 Admin Dashboard
+            </h1>
+            <p class="text-muted">Welcome to GoCeylon Bus Management System Admin Panel</p>
+        </div>
+    </div>
+
+    <!-- Dashboard Stats -->
+    <div class="row mb-4">
+        <div class="col-md-6 col-lg-3 mb-3">
+            <div class="card card-go-ceylon">
+                <div class="card-body text-center">
+                    <div style="font-size: 40px; margin-bottom: 10px;">🚌</div>
+                    <h2 style="color: var(--go-ceylon-red);">@ViewBag.TotalBuses</h2>
+                    <p class="card-text"><strong>Total Buses</strong></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3 mb-3">
+            <div class="card card-go-ceylon">
+                <div class="card-body text-center">
+                    <div style="font-size: 40px; margin-bottom: 10px;">🛣️</div>
+                    <h2 style="color: var(--go-ceylon-red);">@ViewBag.TotalRoutes</h2>
+                    <p class="card-text"><strong>Total Routes</strong></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3 mb-3">
+            <div class="card card-go-ceylon">
+                <div class="card-body text-center">
+                    <div style="font-size: 40px; margin-bottom: 10px;">📅</div>
+                    <h2 style="color: var(--go-ceylon-red);">@ViewBag.TotalSchedules</h2>
+                    <p class="card-text"><strong>Total Schedules</strong></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3 mb-3">
+            <div class="card card-go-ceylon">
+                <div class="card-body text-center">
+                    <div style="font-size: 40px; margin-bottom: 10px;">👥</div>
+                    <h2 style="color: var(--go-ceylon-red);">@ViewBag.TotalUsers</h2>
+                    <p class="card-text"><strong>Total Users</strong></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-go-ceylon">
+                <div class="card-header">
+                    ⚡ Quick Actions
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-3 mb-2">
+                            <a href="/admin/buses" class="btn btn-go-ceylon w-100">🚌 Manage Buses</a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="/admin/routes" class="btn btn-go-ceylon w-100">🛣️ Manage Routes</a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="/admin/schedules" class="btn btn-go-ceylon w-100">📅 Manage Schedules</a>
+                        </div>
+                        <div class="col-md-3 mb-2">
+                            <a href="/admin/fares" class="btn btn-go-ceylon w-100">💰 Set Fares</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    :root {
+        --go-ceylon-red: #DC143C;
+        --go-ceylon-yellow: #FFD700;
+        --go-ceylon-dark-red: #8B0000;
+    }
+</style>

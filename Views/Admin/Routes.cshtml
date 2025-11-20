@@ -1,0 +1,182 @@
+@{
+    ViewData["Title"] = "Manage Routes - GoCeylon";
+}
+
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="admin-section-title">🛣️ Manage Routes</h1>
+        </div>
+    </div>
+
+    <!-- Add Route Form -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card card-go-ceylon">
+                <div class="card-header">➕ Add New Route</div>
+                <div class="card-body">
+                    <form id="addRouteForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="fromLocation" class="form-label">From Location</label>
+                                <input type="text" class="form-control" id="fromLocation" placeholder="e.g., Colombo" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="toLocation" class="form-label">To Location</label>
+                                <input type="text" class="form-control" id="toLocation" placeholder="e.g., Kandy" required>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="distance" class="form-label">Distance (km)</label>
+                                <input type="number" class="form-control" id="distance" step="0.1" placeholder="115.5" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="estimatedTime" class="form-label">Estimated Time</label>
+                                <input type="text" class="form-control" id="estimatedTime" placeholder="e.g., 2h 30m" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-go-ceylon">✅ Add Route</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Routes Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-go-ceylon">
+                <div class="card-header">📋 Routes List</div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-go-ceylon table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>From</th>
+                                    <th>To</th>
+                                    <th>Distance (km)</th>
+                                    <th>Est. Time</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="routesTableBody">
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted">Loading...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API_BASE = '/api';
+
+    // Load routes
+    async function loadRoutes() {
+        try {
+            const response = await fetch(`${API_BASE}/route`);
+            const result = await response.json();
+            
+            const tbody = document.getElementById('routesTableBody');
+            tbody.innerHTML = '';
+
+            if (result.success && result.data.length > 0) {
+                result.data.forEach(route => {
+                    const row = `
+                        <tr>
+                            <td>${route.routeId}</td>
+                            <td><strong>${route.fromLocation}</strong></td>
+                            <td><strong>${route.toLocation}</strong></td>
+                            <td>${route.distance}</td>
+                            <td>${route.estimatedTime}</td>
+                            <td>
+                                <button class="btn btn-sm btn-warning" onclick="editRoute(${route.routeId})">✏️ Edit</button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteRoute(${route.routeId})">🗑️ Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+            } else {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No routes found</td></tr>';
+            }
+        } catch (error) {
+            console.error('Error loading routes:', error);
+            alert('Error loading routes');
+        }
+    }
+
+    // Add route
+    document.getElementById('addRouteForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const route = {
+            fromLocation: document.getElementById('fromLocation').value,
+            toLocation: document.getElementById('toLocation').value,
+            distance: parseFloat(document.getElementById('distance').value),
+            estimatedTime: document.getElementById('estimatedTime').value
+        };
+
+        try {
+            const response = await fetch(`${API_BASE}/route`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(route)
+            });
+
+            const result = await response.json();
+            console.log('Response status:', response.status);
+            console.log('Response result:', result);
+            
+            if (result.success) {
+                alert('Route added successfully!');
+                document.getElementById('addRouteForm').reset();
+                loadRoutes();
+            } else {
+                alert(`Error: ${result.message}\n${result.error || ''}`);
+            }
+        } catch (error) {
+            console.error('Error adding route:', error);
+            alert('Error adding route: ' + error.message);
+        }
+    });
+
+    // Delete route
+    async function deleteRoute(routeId) {
+        if (!confirm('Are you sure you want to delete this route?')) return;
+
+        try {
+            const response = await fetch(`${API_BASE}/route/${routeId}`, {
+                method: 'DELETE'
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                alert('Route deleted successfully!');
+                loadRoutes();
+            } else {
+                alert(`Error: ${result.message}`);
+            }
+        } catch (error) {
+            console.error('Error deleting route:', error);
+            alert('Error deleting route');
+        }
+    }
+
+    // Load routes on page load
+    loadRoutes();
+</script>
+
+<style>
+    :root {
+        --go-ceylon-red: #DC143C;
+        --go-ceylon-yellow: #FFD700;
+        --go-ceylon-dark-red: #8B0000;
+    }
+</style>

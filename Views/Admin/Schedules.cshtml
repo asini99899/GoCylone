@@ -1,0 +1,217 @@
+@{
+    ViewData["Title"] = "Manage Schedules - GoCeylon";
+}
+
+<div class="container-fluid mt-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h1 class="admin-section-title">📅 Manage Schedules</h1>
+        </div>
+    </div>
+
+    <!-- Add Schedule Form -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card card-go-ceylon">
+                <div class="card-header">➕ Add New Schedule</div>
+                <div class="card-body">
+                    <form id="addScheduleForm">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="busId" class="form-label">Bus</label>
+                                <select class="form-control" id="busId" required>
+                                    <option value="">-- Select Bus --</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="routeId" class="form-label">Route</label>
+                                <select class="form-control" id="routeId" required>
+                                    <option value="">-- Select Route --</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="scheduledDate" class="form-label">Scheduled Date</label>
+                                <input type="date" class="form-control" id="scheduledDate" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="departureTime" class="form-label">Departure Time</label>
+                                <input type="time" class="form-control" id="departureTime" required>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-go-ceylon">✅ Add Schedule</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Schedules Table -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card card-go-ceylon">
+                <div class="card-header">📋 Schedules List</div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-go-ceylon table-hover">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Bus</th>
+                                    <th>Route</th>
+                                    <th>Date</th>
+                                    <th>Departure</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="schedulesTableBody">
+                                <tr>
+                                    <td colspan="6" class="text-center text-muted">Loading...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const API_BASE = '/api';
+
+    // Load buses and routes for dropdown
+    async function loadDropdowns() {
+        try {
+            const busesResponse = await fetch(`${API_BASE}/bus`);
+            const routesResponse = await fetch(`${API_BASE}/route`);
+            
+            const busesResult = await busesResponse.json();
+            const routesResult = await routesResponse.json();
+
+            const busSelect = document.getElementById('busId');
+            const routeSelect = document.getElementById('routeId');
+
+            busesResult.data?.forEach(bus => {
+                const option = document.createElement('option');
+                option.value = bus.busId;
+                option.text = `${bus.numberPlate} (${bus.condition})`;
+                busSelect.appendChild(option);
+            });
+
+            routesResult.data?.forEach(route => {
+                const option = document.createElement('option');
+                option.value = route.routeId;
+                option.text = `${route.fromLocation} → ${route.toLocation}`;
+                routeSelect.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Error loading dropdowns:', error);
+        }
+    }
+
+    // Load schedules
+    async function loadSchedules() {
+        try {
+            const response = await fetch(`${API_BASE}/schedule`);
+            const result = await response.json();
+            
+            const tbody = document.getElementById('schedulesTableBody');
+            tbody.innerHTML = '';
+
+            if (result.success && result.data.length > 0) {
+                result.data.forEach(schedule => {
+                    const date = new Date(schedule.scheduledDate).toLocaleDateString();
+                    const row = `
+                        <tr>
+                            <td>${schedule.scheduleId}</td>
+                            <td><strong>${schedule.bus?.numberPlate || 'N/A'}</strong></td>
+                            <td>${schedule.route?.fromLocation} → ${schedule.route?.toLocation}</td>
+                            <td>${date}</td>
+                            <td>${schedule.departureTime}</td>
+                            <td>
+                                <button class="btn btn-sm btn-warning" onclick="editSchedule(${schedule.scheduleId})">✏️ Edit</button>
+                                <button class="btn btn-sm btn-danger" onclick="deleteSchedule(${schedule.scheduleId})">🗑️ Delete</button>
+                            </td>
+                        </tr>
+                    `;
+                    tbody.innerHTML += row;
+                });
+            } else {
+                tbody.innerHTML = '<tr><td colspan="6" class="text-center text-muted">No schedules found</td></tr>';
+            }
+        } catch (error) {
+            console.error('Error loading schedules:', error);
+        }
+    }
+
+    // Add schedule
+    document.getElementById('addScheduleForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const schedule = {
+            busId: parseInt(document.getElementById('busId').value),
+            routeId: parseInt(document.getElementById('routeId').value),
+            scheduledDate: document.getElementById('scheduledDate').value,
+            departureTime: document.getElementById('departureTime').value
+        };
+
+        try {
+            const response = await fetch(`${API_BASE}/schedule`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(schedule)
+            });
+
+            const result = await response.json();
+            console.log('Response status:', response.status);
+            console.log('Response result:', result);
+            
+            if (result.success) {
+                alert('Schedule added successfully!');
+                document.getElementById('addScheduleForm').reset();
+                loadSchedules();
+            } else {
+                alert(`Error: ${result.message}\n${result.error || ''}`);
+            }
+        } catch (error) {
+            console.error('Error adding schedule:', error);
+            alert('Error adding schedule: ' + error.message);
+        }
+    });
+
+    // Delete schedule
+    async function deleteSchedule(scheduleId) {
+        if (!confirm('Are you sure you want to delete this schedule?')) return;
+
+        try {
+            const response = await fetch(`${API_BASE}/schedule/${scheduleId}`, {
+                method: 'DELETE'
+            });
+
+            const result = await response.json();
+            if (result.success) {
+                alert('Schedule deleted successfully!');
+                loadSchedules();
+            } else {
+                alert(`Error: ${result.message}`);
+            }
+        } catch (error) {
+            console.error('Error deleting schedule:', error);
+            alert('Error deleting schedule');
+        }
+    }
+
+    // Initialize
+    loadDropdowns();
+    loadSchedules();
+</script>
+
+<style>
+    :root {
+        --go-ceylon-red: #DC143C;
+        --go-ceylon-yellow: #FFD700;
+        --go-ceylon-dark-red: #8B0000;
+    }
+</style>

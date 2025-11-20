@@ -1,0 +1,231 @@
+/* GoCeylon Brand Colors */
+:root {
+  --go-ceylon-red: #DC143C;
+  --go-ceylon-yellow: #FFD700;
+  --go-ceylon-dark-red: #8B0000;
+}
+
+html {
+  font-size: 14px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+.btn:focus, .btn:active:focus, .btn-link.nav-link:focus, .form-control:focus, .form-check-input:focus {
+  box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  margin: 0;
+  background-color: #f8f9fa;
+}
+
+header {
+  flex-shrink: 0;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+footer {
+  flex-shrink: 0;
+}
+
+.form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
+  color: var(--bs-secondary-color);
+  text-align: end;
+}
+
+.form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
+  text-align: start;
+}
+
+/* GoCeylon Navigation Bar */
+.go-ceylon-navbar {
+  background: linear-gradient(135deg, var(--go-ceylon-red) 0%, var(--go-ceylon-dark-red) 100%);
+  box-shadow: 0 2px 8px rgba(220, 20, 60, 0.3);
+}
+
+.go-ceylon-brand {
+  color: var(--go-ceylon-yellow) !important;
+  font-weight: bold;
+  font-size: 1.5rem;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.go-ceylon-navbar .nav-link {
+  color: var(--go-ceylon-yellow) !important;
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+.go-ceylon-navbar .nav-link:hover {
+  color: white !important;
+  text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+}
+
+.go-ceylon-navbar .dropdown-menu {
+  background-color: var(--go-ceylon-red);
+  border: 2px solid var(--go-ceylon-yellow);
+}
+
+.go-ceylon-navbar .dropdown-item {
+  color: var(--go-ceylon-yellow);
+}
+
+.go-ceylon-navbar .dropdown-item:hover,
+.go-ceylon-navbar .dropdown-item:focus {
+  background-color: var(--go-ceylon-dark-red);
+  color: white;
+}
+
+/* GoCeylon Footer */
+.go-ceylon-footer {
+  background: linear-gradient(135deg, var(--go-ceylon-red) 0%, var(--go-ceylon-dark-red) 100%);
+  color: var(--go-ceylon-yellow) !important;
+  padding: 30px 0;
+  font-weight: 500;
+  text-align: center;
+  border-top: 3px solid var(--go-ceylon-yellow);
+  margin-top: auto;
+  box-shadow: 0 -2px 8px rgba(220, 20, 60, 0.2);
+}
+
+/* User Page Footer (Purple) */
+.go-ceylon-footer.user-footer {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-top: 3px solid #667eea;
+  box-shadow: 0 -2px 8px rgba(102, 126, 234, 0.2);
+}
+
+.go-ceylon-footer .container {
+  padding: 0 15px;
+}
+
+.go-ceylon-footer a {
+  color: var(--go-ceylon-yellow);
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.go-ceylon-footer a:hover {
+  color: white;
+  text-shadow: 0 0 5px rgba(255, 215, 0, 0.5);
+}
+
+/* Buttons with GoCeylon theme */
+.btn-go-ceylon {
+  background-color: var(--go-ceylon-red);
+  border-color: var(--go-ceylon-red);
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-go-ceylon:hover {
+  background-color: var(--go-ceylon-dark-red);
+  border-color: var(--go-ceylon-dark-red);
+  color: var(--go-ceylon-yellow);
+  box-shadow: 0 4px 12px rgba(220, 20, 60, 0.4);
+}
+
+.btn-go-ceylon-outline {
+  border: 2px solid var(--go-ceylon-red);
+  color: var(--go-ceylon-red);
+  background-color: transparent;
+  font-weight: 600;
+}
+
+.btn-go-ceylon-outline:hover {
+  background-color: var(--go-ceylon-red);
+  color: var(--go-ceylon-yellow);
+}
+
+/* Badge styling */
+.badge-go-ceylon {
+  background-color: var(--go-ceylon-red);
+  color: var(--go-ceylon-yellow);
+  font-weight: 600;
+}
+
+/* Card styling */
+.card-go-ceylon {
+  border: 2px solid var(--go-ceylon-red);
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(220, 20, 60, 0.15);
+  transition: all 0.3s ease;
+}
+
+.card-go-ceylon:hover {
+  box-shadow: 0 4px 16px rgba(220, 20, 60, 0.25);
+  transform: translateY(-2px);
+}
+
+.card-go-ceylon .card-header {
+  background: linear-gradient(135deg, var(--go-ceylon-red) 0%, var(--go-ceylon-dark-red) 100%);
+  color: var(--go-ceylon-yellow);
+  font-weight: 600;
+  border-bottom: 2px solid var(--go-ceylon-yellow);
+}
+
+/* Alert styling */
+.alert-go-ceylon {
+  background-color: rgba(220, 20, 60, 0.1);
+  border: 2px solid var(--go-ceylon-red);
+  color: var(--go-ceylon-dark-red);
+}
+
+/* Form controls */
+.form-control:focus {
+  border-color: var(--go-ceylon-red);
+  box-shadow: 0 0 0 0.2rem rgba(220, 20, 60, 0.25);
+}
+
+/* Table styling */
+.table-go-ceylon {
+  border-top: 3px solid var(--go-ceylon-red);
+}
+
+.table-go-ceylon thead {
+  background: linear-gradient(135deg, var(--go-ceylon-red) 0%, var(--go-ceylon-dark-red) 100%);
+  color: var(--go-ceylon-yellow);
+  font-weight: 600;
+}
+
+.table-go-ceylon tbody tr:hover {
+  background-color: rgba(220, 20, 60, 0.05);
+}
+
+/* Admin Dashboard */
+.admin-section-title {
+  color: var(--go-ceylon-red);
+  font-weight: 700;
+  border-bottom: 3px solid var(--go-ceylon-yellow);
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+.admin-card {
+  background: white;
+  border-left: 5px solid var(--go-ceylon-red);
+  padding: 20px;
+  margin-bottom: 15px;
+  border-radius: 4px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}

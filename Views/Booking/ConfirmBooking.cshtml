@@ -1,0 +1,670 @@
+@model ConfirmBookingViewModel
+
+@{
+    ViewData["Title"] = "Confirm Booking";
+}
+
+<style>
+    .payment-container {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 30px 0;
+    }
+
+    .payment-card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        padding: 30px;
+    }
+
+    .payment-title {
+        color: #667eea;
+        font-size: 28px;
+        font-weight: bold;
+        margin-bottom: 30px;
+    }
+
+    .booking-summary {
+        background: #f5f5f5;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+        border-left: 4px solid #667eea;
+    }
+
+    .summary-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 20px;
+    }
+
+    .summary-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .summary-label {
+        font-size: 12px;
+        color: #666;
+        text-transform: uppercase;
+        font-weight: 600;
+        margin-bottom: 5px;
+    }
+
+    .summary-value {
+        font-size: 16px;
+        color: #333;
+        font-weight: 600;
+    }
+
+    .seats-summary {
+        background: #e8f5e9;
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 30px;
+        border-left: 5px solid #4caf50;
+        box-shadow: 0 2px 8px rgba(76, 175, 80, 0.15);
+    }
+
+    .seats-summary-title {
+        font-weight: bold;
+        color: #4caf50;
+        margin-bottom: 10px;
+        font-size: 16px;
+    }
+
+    .seats-summary-list {
+        color: #2e7d32;
+        font-weight: 600;
+        font-size: 18px;
+        word-break: break-word;
+    }
+
+    .payment-section {
+        background: #f9f9f9;
+        padding: 25px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+    }
+
+    .section-title {
+        font-size: 18px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 8px;
+    }
+
+    .form-input {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #ddd;
+        border-radius: 5px;
+        font-size: 14px;
+        box-sizing: border-box;
+    }
+
+    .form-input:focus {
+        border-color: #667eea;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+    }
+
+    .form-grid-full {
+        grid-column: 1 / -1;
+    }
+
+    .fare-summary {
+        background: #fff3e0;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 30px;
+        border-left: 4px solid #ff9800;
+    }
+
+    .fare-row {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 10px;
+        color: #333;
+    }
+
+    .fare-row:last-child {
+        margin-bottom: 0;
+        font-size: 18px;
+        font-weight: bold;
+        color: #f57c00;
+        border-top: 2px solid #ffe0b2;
+        padding-top: 10px;
+    }
+
+    .buttons-section {
+        display: flex;
+        gap: 15px;
+    }
+
+    .btn {
+        padding: 12px 30px;
+        border: none;
+        border-radius: 5px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 16px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        flex: 1;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-primary:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .btn-secondary {
+        background: #f5f5f5;
+        color: #333;
+        border: 2px solid #ddd;
+    }
+
+    .btn-secondary:hover {
+        background: #e0e0e0;
+    }
+
+    .security-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #666;
+        font-size: 12px;
+        margin-top: 15px;
+    }
+
+    .error-msg {
+        background: #ffebee;
+        border: 1px solid #f5c6cb;
+        color: #c62828;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        display: none;
+    }
+
+    .error-msg.show {
+        display: block;
+    }
+
+    .loading-spinner {
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        border: 2px solid #f3f3f3;
+        border-top: 2px solid #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-right: 8px;
+    }
+
+    @@keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+
+<div class="payment-container">
+    <div class="container">
+        <div class="payment-card">
+            <h1 class="payment-title" data-translate="confirm_your_booking">💳 Confirm Your Booking</h1>
+
+            <div class="error-msg" id="errorMsg"></div>
+
+            <!-- Booking Summary -->
+            <div class="booking-summary">
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <span class="summary-label" data-translate="from">From</span>
+                        <span class="summary-value">@Model.FromLocation</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label" data-translate="to">To</span>
+                        <span class="summary-value">@Model.ToLocation</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label" data-translate="departure_time">Departure</span>
+                        <span class="summary-value">@Model.DepartureTime.ToString(@"hh\:mm")</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label" data-translate="bus_number_label">Bus</span>
+                        <span class="summary-value">@Model.BusNumberPlate</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Selected Seats -->
+            <div class="seats-summary">
+                <div class="seats-summary-title" data-translate="selected_seats_label">✈️ Selected Seats:</div>
+                <div class="seats-summary-list" id="seatsList">
+                    @if (Model?.SelectedSeats != null && Model.SelectedSeats.Count > 0)
+                    {
+                        <strong style="color: #2e7d32; font-size: 18px;">
+                            @string.Join(", ", Model.SelectedSeats.OrderBy(s => s))
+                        </strong>
+                    }
+                    else
+                    {
+                        <span style="color: #999; font-style: italic;" data-translate="no_seats_selected">No seats selected
+                            (booking without seat selection)</span>
+                    }
+                </div>
+            </div>
+
+            <!-- Boarding & Drop Info -->
+            <div class="booking-summary">
+                <div class="summary-grid">
+                    <div class="summary-item">
+                        <span class="summary-label" data-translate="pickup_location_label">Pickup Location</span>
+                        <span class="summary-value">@Model.PickupLocation</span>
+                    </div>
+                    <div class="summary-item">
+                        <span class="summary-label" data-translate="drop_location_label">Drop Location</span>
+                        <span class="summary-value">@Model.DropLocation</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fare Summary -->
+            <div class="fare-summary">
+                <div class="fare-row">
+                    <span data-translate="distance">Distance</span>
+                    <span>@Model.Distance km</span>
+                </div>
+                <div class="fare-row">
+                    <span data-translate="fare_per_km">Fare per KM</span>
+                    <span>Rs. @Model.FarePerKm.ToString("F2")</span>
+                </div>
+                <div class="fare-row">
+                    <span data-translate="base_fare">Base Fare (Distance × Fare/KM)</span>
+                    <span>Rs. @Model.BaseFare.ToString("F2")</span>
+                </div>
+                <div class="fare-row">
+                    <span data-translate="service_charge">Service Charge</span>
+                    <span>Rs. @Model.ServiceCharge.ToString("F2")</span>
+                </div>
+                <div class="fare-row">
+                    <span data-translate="total_fare_label">TOTAL FARE</span>
+                    <span id="totalFare">Rs. @Model.TotalFare.ToString("F2")</span>
+                </div>
+            </div>
+
+            <!-- Payment Form -->
+            <form id="paymentForm" onsubmit="processPayment(event)">
+                <div class="payment-section">
+                    <h3 class="section-title" data-translate="card_payment_details">💳 Card Payment Details</h3>
+
+                    <div class="form-group form-grid-full">
+                        <label class="form-label" data-translate="cardholder_name">Cardholder Name</label>
+                        <input type="text" class="form-input" id="cardHolderName"
+                            data-translate-placeholder="cardholder_name" required>
+                    </div>
+
+                    <div class="form-group form-grid-full">
+                        <div
+                            style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                            <label class="form-label" style="margin-bottom: 0;" data-translate="card_number">Card
+                                Number</label>
+                            <span id="cardTypeIcon" style="font-size: 20px;"></span>
+                        </div>
+                        <input type="text" class="form-input" id="cardNumber" data-translate-placeholder="card_number"
+                            maxlength="23" required>
+                        <small id="cardTypeLabel" style="color: #666; font-size: 12px; margin-top: 5px;"></small>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label" data-translate="expiry_date">Expiry Date (MM/YY)</label>
+                            <input type="text" class="form-input" id="expiryDate"
+                                data-translate-placeholder="expiry_date" maxlength="5" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" data-translate="cvv">CVV</label>
+                            <input type="text" class="form-input" id="cvv" data-translate-placeholder="cvv"
+                                maxlength="3" required>
+                        </div>
+                    </div>
+
+                    <div class="security-info" data-translate="security_info">
+                        🔒 Your payment information is secure and encrypted
+                    </div>
+                </div>
+
+                <div class="buttons-section">
+                    <button type="button" class="btn btn-secondary" onclick="window.history.back()"
+                        data-translate-value="back">Back</button>
+                    <button type="submit" class="btn btn-primary" id="payBtn">
+                        <span id="payBtnText" data-translate-value="pay">Pay Rs. @Model.TotalFare.ToString("F2")</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    const scheduleId = @Model.ScheduleId;
+    const selectedSeats = [@if (Model.SelectedSeats != null && Model.SelectedSeats.Count > 0) { @string.Join(", ", Model.SelectedSeats); }];
+    const pickupLocation = '@Model.PickupLocation';
+    const dropLocation = '@Model.DropLocation';
+    const totalFare = @Model.TotalFare.ToString("0.00");
+
+    // Detect card type function - improved with better regex patterns
+    function detectCardType(cardNumber) {
+        const cleanNumber = cardNumber.replace(/\s/g, '');
+
+        const patterns = {
+            VISA: /^4[0-9]{12}(?:[0-9]{3})?$/,
+            MASTERCARD: /^5[1-5][0-9]{14}$|^2[2-7][0-9]{14}$/,
+            AMEX: /^3[47][0-9]{13}$/,
+            DISCOVER: /^6(?:011|5[0-9]{2})[0-9]{12}$/
+        };
+
+        for (const [type, pattern] of Object.entries(patterns)) {
+            if (pattern.test(cleanNumber)) {
+                return type;
+            }
+        }
+        return null;
+    }
+
+    // Format card input with proper spacing and type detection
+    function setupCardTypeDetection() {
+        const cardInput = document.getElementById('cardNumber');
+        if (!cardInput) {
+            console.warn('Card input element not found');
+            return;
+        }
+
+        cardInput.addEventListener('input', function (e) {
+            console.log('Card input changed:', e.target.value);
+
+            // Remove all spaces first
+            let value = e.target.value.replace(/\s/g, '');
+
+            // Allow only digits
+            value = value.replace(/\D/g, '');
+
+            // Limit to 19 digits
+            value = value.slice(0, 19);
+
+            // Format with spaces every 4 digits
+            let formattedValue = '';
+            for (let i = 0; i < value.length; i++) {
+                if (i > 0 && i % 4 === 0) {
+                    formattedValue += ' ';
+                }
+                formattedValue += value[i];
+            }
+
+            e.target.value = formattedValue;
+
+            // Detect card type using clean number
+            const cardType = detectCardType(value);
+            console.log('Detected card type:', cardType, 'from number:', value);
+
+            const cardTypeIcon = document.getElementById('cardTypeIcon');
+            const cardTypeLabel = document.getElementById('cardTypeLabel');
+
+            if (!cardTypeIcon || !cardTypeLabel) {
+                console.warn('Card type display elements not found');
+                return;
+            }
+
+            if (cardType) {
+                const icons = {
+                    VISA: '💳 Visa',
+                    MASTERCARD: '💳 Mastercard',
+                    AMEX: '💳 American Express',
+                    DISCOVER: '💳 Discover'
+                };
+                const typeColors = {
+                    VISA: '#1A1F71',
+                    MASTERCARD: '#FF5F00',
+                    AMEX: '#006FCF',
+                    DISCOVER: '#FF6000'
+                };
+                cardTypeIcon.textContent = icons[cardType];
+                cardTypeIcon.style.color = typeColors[cardType];
+                cardTypeLabel.textContent = `${cardType} card detected`;
+                cardTypeLabel.style.color = typeColors[cardType];
+                console.log('Card type displayed:', icons[cardType]);
+            } else {
+                cardTypeIcon.textContent = '';
+                cardTypeLabel.textContent = '';
+            }
+        });
+    }
+
+    function initializeFormListeners() {
+        console.log('Initializing form listeners...');
+        const expiryInput = document.getElementById('expiryDate');
+        const cvvInput = document.getElementById('cvv');
+
+        if (expiryInput) {
+            expiryInput.addEventListener('input', (e) => {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length >= 2) {
+                    value = value.slice(0, 2) + '/' + value.slice(2, 4);
+                }
+                e.target.value = value;
+            });
+            console.log('Expiry date listener added');
+        } else {
+            console.warn('Expiry date input not found');
+        }
+
+        if (cvvInput) {
+            cvvInput.addEventListener('input', (e) => {
+                e.target.value = e.target.value.replace(/\D/g, '').slice(0, 3);
+            });
+            console.log('CVV listener added');
+        } else {
+            console.warn('CVV input not found');
+        }
+    }
+
+    function processPayment(event) {
+        event.preventDefault();
+        console.log('Payment form submitted');
+
+        const cardHolderName = document.getElementById('cardHolderName').value.trim();
+        const cardNumber = document.getElementById('cardNumber').value.replace(/\s/g, '');
+        const expiryDate = document.getElementById('expiryDate').value.trim();
+        const cvv = document.getElementById('cvv').value.trim();
+
+        console.log('Form values:', { cardHolderName, cardNumber, expiryDate, cvv });
+
+        // Basic validation
+        if (!cardHolderName) {
+            showError('Please enter cardholder name');
+            return;
+        }
+
+        if (cardNumber.length < 13 || cardNumber.length > 19) {
+            showError('Please enter a valid card number (13-19 digits)');
+            return;
+        }
+
+        const cardType = detectCardType(cardNumber);
+        if (!cardType) {
+            showError('Please enter a valid Visa, Mastercard, Amex or Discover card number');
+            return;
+        }
+
+        if (!expiryDate || !expiryDate.includes('/')) {
+            showError('Please enter expiry date in MM/YY format');
+            return;
+        }
+
+        const [month, year] = expiryDate.split('/');
+        if (month < 1 || month > 12 || !year) {
+            showError('Please enter a valid expiry date');
+            return;
+        }
+
+        if (cvv.length !== 3 && cvv.length !== 4) {
+            showError('Please enter a valid CVV (3-4 digits)');
+            return;
+        }
+
+        console.log('All validations passed');
+
+        const payBtn = document.getElementById('payBtn');
+        const payBtnText = document.getElementById('payBtnText');
+        payBtn.disabled = true;
+        payBtnText.innerHTML = '<span class="loading-spinner"></span>Processing payment...';
+
+        const payload = {
+            scheduleId: scheduleId,
+            selectedSeats: selectedSeats,
+            pickupLocation: pickupLocation,
+            dropLocation: dropLocation,
+            totalFare: parseFloat(totalFare),
+            cardHolderName: cardHolderName,
+            cardNumber: cardNumber,
+            expiryDate: expiryDate,
+            cvv: cvv
+        };
+
+        console.log('Sending payload:', payload);
+
+        fetch('/Booking/ProcessPayment', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(payload)
+        })
+            .then(async response => {
+                console.log('Response received - Status:', response.status);
+                console.log('Response headers:', response.headers.get('content-type'));
+
+                const responseText = await response.text();
+                console.log('Raw response text:', responseText);
+
+                if (!response.ok) {
+                    console.error('Error response received');
+                    try {
+                        const data = JSON.parse(responseText);
+                        throw new Error(data.message || data.Message || `HTTP ${response.status}`);
+                    } catch (e) {
+                        if (e instanceof SyntaxError) {
+                            throw new Error(`HTTP ${response.status}: Invalid response`);
+                        }
+                        throw e;
+                    }
+                }
+
+                // Parse the successful response
+                try {
+                    return JSON.parse(responseText);
+                } catch (e) {
+                    console.error('Failed to parse response JSON:', e);
+                    throw new Error('Invalid response format from server');
+                }
+            })
+            .then(result => {
+                console.log('Payment response received:', result);
+                console.log('Result type:', typeof result);
+                console.log('Result keys:', Object.keys(result));
+
+                // Handle both Success/success and BookingId/bookingId cases
+                const isSuccess = result.Success !== undefined ? result.Success : (result.success !== undefined ? result.success : false);
+                const bookingId = result.BookingId !== undefined ? result.BookingId : (result.bookingId !== undefined ? result.bookingId : null);
+
+                console.log('isSuccess:', isSuccess, 'bookingId:', bookingId);
+
+                if (isSuccess && bookingId) {
+                    console.log('Payment successful! Redirecting to Success page:', `/Booking/Success/${bookingId}`);
+                    // Redirect to success page
+                    window.location.href = `/Booking/Success/${bookingId}`;
+                } else {
+                    const errorMsg = result.Message || result.message || 'Payment failed. Please try again.';
+                    console.error('Payment failed:', errorMsg);
+                    showError(errorMsg);
+                    payBtn.disabled = false;
+                    payBtnText.innerHTML = `Pay Rs. ${totalFare}`;
+                }
+            })
+            .catch(error => {
+                console.error('Payment error:', error);
+                console.error('Error stack:', error.stack);
+                showError('Error processing payment: ' + error.message);
+                payBtn.disabled = false;
+                payBtnText.innerHTML = `Pay Rs. ${totalFare}`;
+            });
+    }
+
+    function showError(message) {
+        const errorMsg = document.getElementById('errorMsg');
+        errorMsg.textContent = message;
+        errorMsg.classList.add('show');
+        setTimeout(() => {
+            errorMsg.classList.remove('show');
+        }, 5000);
+    }
+
+    // Initialize on page load
+    window.addEventListener('DOMContentLoaded', () => {
+        console.log('=== ConfirmBooking Page Initialized ===');
+        console.log('Schedule ID:', scheduleId);
+        console.log('Selected Seats:', selectedSeats);
+        console.log('Total Fare:', totalFare);
+
+        // Setup all form listeners
+        console.log('Setting up form listeners...');
+        initializeFormListeners();
+
+        // Setup card type detection
+        console.log('Setting up card type detection...');
+        setupCardTypeDetection();
+
+        // Translate page
+        if (typeof translatePage === 'function') {
+            console.log('Translating page...');
+            translatePage();
+        }
+
+        console.log('=== Initialization Complete ===');
+    });
+</script>

@@ -1,0 +1,397 @@
+@{
+    ViewData["Title"] = "Select Language";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-translate="language_selection">Language Selection</title>
+    <script src="/js/translator.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .language-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            width: 100%;
+            max-width: 600px;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @@keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .language-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 50px 30px;
+            text-align: center;
+        }
+
+        .brand-logo {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .language-header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .language-header p {
+            font-size: 16px;
+            opacity: 0.95;
+            margin-bottom: 5px;
+        }
+
+        .language-body {
+            padding: 50px 30px;
+        }
+
+        .language-description {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 16px;
+            line-height: 1.6;
+        }
+
+        .language-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .language-btn {
+            padding: 30px 20px;
+            border: 3px solid #e0e0e0;
+            background: white;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            min-height: 180px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .language-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: left 0.3s ease;
+            z-index: -1;
+        }
+
+        .language-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.3);
+            border-color: #667eea;
+        }
+
+        .language-btn:hover::before {
+            left: 0;
+        }
+
+        .language-btn:hover .lang-flag,
+        .language-btn:hover .lang-name,
+        .language-btn:hover .lang-native {
+            color: white;
+        }
+
+        .language-btn.active {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .language-btn.active .lang-flag,
+        .language-btn.active .lang-name,
+        .language-btn.active .lang-native {
+            color: white;
+        }
+
+        .language-btn.active::after {
+            content: '✓';
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 30px;
+            height: 30px;
+            background: white;
+            color: #667eea;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .lang-flag {
+            font-size: 48px;
+            line-height: 1;
+            transition: color 0.3s ease;
+        }
+
+        .lang-name {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            transition: color 0.3s ease;
+        }
+
+        .lang-native {
+            font-size: 14px;
+            color: #999;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 14px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 150px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+            transform: translateY(-2px);
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border-left: 4px solid #2196f3;
+            color: #1565c0;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 30px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .info-box strong {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 15px;
+        }
+
+        .success-message {
+            background: #d4edda;
+            border-left: 4px solid #4caf50;
+            color: #155724;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .success-message.show {
+            display: block;
+        }
+
+        @@keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @@media (max-width: 600px) {
+            .language-options {
+                grid-template-columns: 1fr;
+            }
+
+            .language-header h1 {
+                font-size: 26px;
+            }
+
+            .language-body {
+                padding: 30px 20px;
+            }
+
+            .action-buttons {
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="language-container">
+        <div class="language-header">
+            <div class="brand-logo">🚌</div>
+            <h1 data-translate="language_selection">Language Selection</h1>
+            <p data-translate="choose_language">Please choose your preferred language to continue</p>
+        </div>
+
+        <div class="language-body">
+            <div class="success-message" id="successMessage">
+                ✅ <span data-translate="language_selected">Language selected successfully</span>
+            </div>
+
+            <p class="language-description" data-translate="select_language">
+                Select Your Preferred Language
+            </p>
+
+            <div class="language-options">
+                <!-- English -->
+                <button class="language-btn active" data-lang="en" onclick="selectLanguage('en')">
+                    <div class="lang-flag">🇬🇧</div>
+                    <div class="lang-name">English</div>
+                    <div class="lang-native">English</div>
+                </button>
+
+                <!-- Sinhala -->
+                <button class="language-btn" data-lang="si" onclick="selectLanguage('si')">
+                    <div class="lang-flag">🇱🇰</div>
+                    <div class="lang-name" data-translate="sinhala">Sinhala</div>
+                    <div class="lang-native">සිංහල</div>
+                </button>
+
+                <!-- Tamil -->
+                <button class="language-btn" data-lang="ta" onclick="selectLanguage('ta')">
+                    <div class="lang-flag">🇮🇳</div>
+                    <div class="lang-name" data-translate="tamil">Tamil</div>
+                    <div class="lang-native">தமிழ்</div>
+                </button>
+            </div>
+
+            <div class="action-buttons">
+                <button type="button" class="btn btn-secondary" onclick="goBack()"
+                    data-translate-value="back">Back</button>
+                <button type="button" class="btn btn-primary" id="continueBtn" onclick="continueWithLanguage()"
+                    data-translate-value="continue">Continue</button>
+            </div>
+
+            <div class="info-box">
+                <strong>ℹ️ Information</strong>
+                <span data-translate="language_info">Your selected language will be used throughout the application. You
+                    can change it anytime from the settings.</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let selectedLanguage = localStorage.getItem('preferredLanguage') || 'en';
+
+        function selectLanguage(lang) {
+            selectedLanguage = lang;
+
+            // Update active button
+            document.querySelectorAll('.language-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-lang="${lang}"]`).classList.add('active');
+
+            // Show success message
+            const successMsg = document.getElementById('successMessage');
+            successMsg.classList.add('show');
+            setTimeout(() => {
+                successMsg.classList.remove('show');
+            }, 3000);
+        }
+
+        function continueWithLanguage() {
+            if (selectedLanguage) {
+                changeLanguage(selectedLanguage);
+                // Redirect to home or dashboard
+                window.location.href = '/Home/Index';
+            }
+        }
+
+        function goBack() {
+            window.location.href = '/Auth/Register';
+        }
+
+        // Initialize with stored language
+        window.addEventListener('DOMContentLoaded', () => {
+            selectLanguage(selectedLanguage);
+            translatePage();
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,723 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+    var userId = Context.Session.GetString("UserId");
+    var userName = Context.Session.GetString("UserName");
+    var fullName = Context.Session.GetString("FullName");
+    var role = Context.Session.GetString("Role");
+}
+
+<style>
+    .navbar {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 15px 30px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        margin-bottom: 20px;
+    }
+
+    .navbar-left {
+        display: flex;
+        align-items: center;
+        gap: 20px;
+    }
+
+    .navbar-brand {
+        font-size: 24px;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .navbar-right {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 15px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 20px;
+        font-size: 14px;
+    }
+
+    .user-role-badge {
+        background: rgba(255, 255, 255, 0.3);
+        padding: 4px 12px;
+        border-radius: 12px;
+        font-size: 12px;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .logout-btn {
+        background: white;
+        color: #667eea;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .logout-btn:hover {
+        background: #f0f4ff;
+        transform: translateY(-2px);
+    }
+
+    .navbar-link {
+        color: white;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        padding: 8px 12px;
+        border-radius: 5px;
+    }
+
+    .navbar-link:hover {
+        background: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+        color: white;
+    }
+
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+    }
+
+    .search-container {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        padding: 30px;
+        margin-top: 0;
+        margin-bottom: 30px;
+        margin-left: 20px;
+        margin-right: 20px;
+    }
+
+    .search-title {
+        color: #667eea;
+        font-weight: bold;
+        margin-bottom: 25px;
+        font-size: 28px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        color: #333;
+        font-weight: 600;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .form-control {
+        border: 2px solid #e0e0e0;
+        border-radius: 5px;
+        padding: 12px;
+        font-size: 15px;
+        transition: border-color 0.3s;
+        width: 100%;
+    }
+
+    .form-control:focus {
+        border-color: #667eea;
+        box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        outline: none;
+    }
+
+    .search-btn {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 12px 40px;
+        border: none;
+        border-radius: 5px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s;
+        width: 100%;
+        font-size: 16px;
+    }
+
+    .search-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .search-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .results-container {
+        margin-top: 40px;
+    }
+
+    .bus-card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        margin-bottom: 20px;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+
+    .bus-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .bus-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        border-bottom: 2px solid #f0f0f0;
+        padding-bottom: 12px;
+    }
+
+    .bus-number {
+        font-size: 20px;
+        font-weight: bold;
+        color: #667eea;
+    }
+
+    .bus-condition {
+        background: #667eea;
+        color: white;
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .bus-details {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    .detail-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .detail-label {
+        font-size: 12px;
+        color: #999;
+        font-weight: 600;
+        text-transform: uppercase;
+        margin-bottom: 5px;
+    }
+
+    .detail-value {
+        font-size: 15px;
+        color: #333;
+        font-weight: 500;
+    }
+
+    .route-info {
+        background: #f8f9ff;
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 15px;
+        border-left: 4px solid #667eea;
+    }
+
+    .route-line {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .route-arrow {
+        color: #667eea;
+        font-size: 18px;
+    }
+
+    .book-btn {
+        background: #28a745;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: background 0.3s;
+    }
+
+    .book-btn:hover {
+        background: #218838;
+    }
+
+    .no-results {
+        text-align: center;
+        padding: 40px;
+        color: #666;
+    }
+
+    .loading {
+        text-align: center;
+        padding: 20px;
+    }
+
+    .spinner {
+        border: 4px solid #f3f3f3;
+        border-top: 4px solid #667eea;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+        display: inline-block;
+    }
+
+    @@keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+
+    .error-msg {
+        background: #f8d7da;
+        border: 1px solid #f5c6cb;
+        color: #721c24;
+        padding: 15px;
+        border-radius: 5px;
+        margin-top: 15px;
+    }
+
+    .success-msg {
+        background: #d4edda;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+        padding: 15px;
+        border-radius: 5px;
+        margin-top: 15px;
+    }
+
+    .row {
+        display: flex;
+        gap: 15px;
+    }
+
+    .col {
+        flex: 1;
+        min-width: 0;
+    }
+
+    @@media (max-width: 768px) {
+        .row {
+            flex-direction: column;
+        }
+
+        .bus-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .bus-details {
+            grid-template-columns: 1fr;
+        }
+
+        .search-container {
+            padding: 20px;
+            margin-top: 20px;
+            margin-left: 10px;
+            margin-right: 10px;
+        }
+
+        .navbar {
+            flex-direction: column;
+            gap: 15px;
+            text-align: center;
+        }
+
+        .navbar-left,
+        .navbar-right {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .features-grid {
+            grid-template-columns: 1fr !important;
+        }
+    }
+
+    /* Features Section Styles */
+    .features-section {
+        background: white;
+        margin: 30px 20px;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .features-title {
+        color: #667eea;
+        font-size: 28px;
+        font-weight: bold;
+        margin-bottom: 30px;
+        text-align: center;
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        margin-bottom: 20px;
+    }
+
+    .feature-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 8px;
+        text-align: center;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+    }
+
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+    }
+
+    .feature-icon {
+        font-size: 32px;
+        margin-bottom: 10px;
+        display: block;
+    }
+
+    .feature-card h3 {
+        font-size: 14px;
+        font-weight: 600;
+        margin: 10px 0 5px 0;
+    }
+
+    .feature-card p {
+        font-size: 12px;
+        opacity: 0.9;
+        margin: 0;
+    }
+</style>
+
+<!-- Navigation Bar -->
+<div class="navbar">
+    <div class="navbar-left">
+        <div class="navbar-brand">🚌 GoCylone</div>
+    </div>
+    <div class="navbar-right">
+        <div style="display: flex; gap: 15px; align-items: center;">
+            <a href="#" class="navbar-link" title="Ratings & Reviews">⭐ Reviews</a>
+            <a href="#" class="navbar-link" title="Support Chat">💬 Support</a>
+            <a href="#" class="navbar-link" title="Track Bus">📍 Track Bus</a>
+            <a href="#" class="navbar-link" title="My Rewards">🎁 Rewards</a>
+        </div>
+        @if (!string.IsNullOrEmpty(userId))
+        {
+            <div class="user-info">
+                <span>👤 @fullName</span>
+                @if (role == "admin")
+                {
+                    <span class="user-role-badge">Admin</span>
+                }
+            </div>
+            <a href="/Auth/Logout" class="logout-btn" data-translate="logout">Logout</a>
+        }
+    </div>
+</div>
+
+<div class="container-fluid" style="padding: 0;">
+    <div class="search-container">
+        <h1 class="search-title" data-translate="find_your_bus">🚌 Find Your Bus</h1>
+
+        <form id="searchForm" onsubmit="searchBuses(event)">
+            <div class="row">
+                <div class="col">
+                    <div class="form-group">
+                        <label for="fromLocation" class="form-label" data-translate="from">From</label>
+                        <input type="text" id="fromLocation" name="fromLocation" class="form-control"
+                            placeholder="Enter departure location" required list="locations"
+                            data-translate-placeholder="enter_from_location">
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="toLocation" class="form-label" data-translate="to">To</label>
+                        <input type="text" id="toLocation" name="toLocation" class="form-control"
+                            placeholder="Enter destination" required list="locations"
+                            data-translate-placeholder="enter_destination">
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="form-group">
+                        <label for="searchDate" class="form-label" data-translate="departure_date">Date</label>
+                        <input type="date" id="searchDate" name="searchDate" class="form-control" required>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="search-btn" id="searchBtn" data-translate-value="search_buses">Search
+                Buses</button>
+        </form>
+
+        <datalist id="locations"></datalist>
+
+        <div id="message"></div>
+
+        <div class="results-container" id="resultsContainer"></div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="features-section">
+        <h2 class="features-title">🚍 GoCeylon App – Key Features</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🌐</div>
+                <h3>Multi-Language</h3>
+                <p>English, Sinhala & Tamil</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎫</div>
+                <h3>E-Tickets</h3>
+                <p>Digital tickets with QR</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📍</div>
+                <h3>Live GPS</h3>
+                <p>Track bus in real-time</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⏰</div>
+                <h3>Timetable</h3>
+                <p>View all schedules</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎁</div>
+                <h3>Rewards</h3>
+                <p>Earn points on booking</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">❤️</div>
+                <h3>Favorites</h3>
+                <p>Save your routes</p>
+            </div>
+            @* <div class="feature-card">
+                <div class="feature-icon">⭐</div>
+                <h3>Reviews</h3>
+                <p>Ratings & feedback</p>
+            </div> *@
+            <div class="feature-card">
+                <div class="feature-icon">🌤️</div>
+                <h3>Weather</h3>
+                <p>Route weather info</p>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    // Set minimum date to today
+    document.getElementById('searchDate').min = new Date().toISOString().split('T')[0];
+
+    // Load locations on page load
+    async function loadLocations() {
+        try {
+            const response = await fetch('/Home/GetLocations');
+            const result = await response.json();
+            if (result.success && result.data) {
+                const datalist = document.getElementById('locations');
+                datalist.innerHTML = result.data.map(loc => `<option value="${loc}">`).join('');
+            }
+        } catch (error) {
+            console.error('Error loading locations:', error);
+        }
+    }
+
+    // Search buses
+    async function searchBuses(event) {
+        event.preventDefault();
+
+        const fromLocation = document.getElementById('fromLocation').value.trim();
+        const toLocation = document.getElementById('toLocation').value.trim();
+        const searchDate = document.getElementById('searchDate').value;
+
+        console.log('Search params:', { fromLocation, toLocation, searchDate });
+
+        if (!fromLocation || !toLocation || !searchDate) {
+            showMessage('Please fill all fields', 'error');
+            return;
+        }
+
+        const searchBtn = document.getElementById('searchBtn');
+        searchBtn.disabled = true;
+        searchBtn.innerHTML = '<span class="spinner"></span> ' + translateText('searching');
+
+        try {
+            const payload = {
+                fromLocation: fromLocation,
+                toLocation: toLocation,
+                searchDate: searchDate
+            };
+
+            console.log('Sending payload:', payload);
+
+            const response = await fetch('/Home/SearchBuses', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+
+            console.log('Response:', result);
+
+            if (result.success) {
+                displayResults(result.data, fromLocation, toLocation);
+                showMessage(result.message, 'success');
+            } else {
+                showMessage(result.message || 'Error searching buses', 'error');
+                document.getElementById('resultsContainer').innerHTML = '';
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            showMessage('Error searching buses: ' + error.message, 'error');
+            document.getElementById('resultsContainer').innerHTML = '';
+        } finally {
+            searchBtn.disabled = false;
+            searchBtn.innerHTML = translateText('search_buses');
+        }
+    }
+
+    // Display results
+    function displayResults(buses, fromLocation, toLocation) {
+        const container = document.getElementById('resultsContainer');
+
+        if (!buses || buses.length === 0) {
+            container.innerHTML = '<div class="no-results"><h3 data-translate="no_buses_found">No buses found</h3><p>Try searching for different locations or dates</p></div>';
+            return;
+        }
+
+        const resultsHTML = buses.map(bus => `
+            <div class="bus-card">
+                <div class="bus-header">
+                    <div class="bus-number">🚌 ${escapeHtml(bus.numberPlate)}</div>
+                    <div>
+                        <span class="bus-condition">${escapeHtml(bus.condition)}</span>
+                    </div>
+                </div>
+
+                <div class="route-info">
+                    <div class="route-line">
+                        <span>${escapeHtml(bus.fromLocation)}</span>
+                        <span class="route-arrow">→</span>
+                        <span>${escapeHtml(bus.toLocation)}</span>
+                    </div>
+                </div>
+
+                <div class="bus-details">
+                    <div class="detail-item">
+                        <span class="detail-label" data-translate="departure_time">Departure Time</span>
+                        <span class="detail-value">${formatTime(bus.departureTime)}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label" data-translate="seats">Number of Seats</span>
+                        <span class="detail-value">${bus.numberOfSeats}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label" data-translate="seat_structure">Seat Structure</span>
+                        <span class="detail-value">${escapeHtml(bus.seatStructure)}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label" data-translate="distance">Distance</span>
+                        <span class="detail-value">${bus.distance} km</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label" data-translate="estimated_time">Estimated Time</span>
+                        <span class="detail-value">${escapeHtml(bus.estimatedTime)}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label" data-translate="scheduled_date">Schedule Date</span>
+                        <span class="detail-value">${formatDate(bus.scheduledDate)}</span>
+                    </div>
+                </div>
+
+                <button class="book-btn" onclick="bookBus(${bus.scheduleId})" data-translate-value="book_now">Book Now</button>
+            </div>
+        `).join('');
+
+        container.innerHTML = resultsHTML;
+        // Re-translate the newly added elements
+        translatePage();
+    }
+
+    // Show message
+    function showMessage(message, type) {
+        const messageDiv = document.getElementById('message');
+        const className = type === 'error' ? 'error-msg' : 'success-msg';
+        messageDiv.innerHTML = `<div class="${className}">${escapeHtml(message)}</div>`;
+        setTimeout(() => {
+            messageDiv.innerHTML = '';
+        }, 5000);
+    }
+
+    // Format time
+    function formatTime(timeString) {
+        if (!timeString) return 'N/A';
+        const [hours, minutes] = timeString.split(':');
+        return `${hours}:${minutes}`;
+    }
+
+    // Format date
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
+    }
+
+    // Escape HTML
+    function escapeHtml(text) {
+        if (!text) return '';
+        const map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+        return text.replace(/[&<>"']/g, m => map[m]);
+    }
+
+    // Book bus
+    function bookBus(scheduleId) {
+        if (!scheduleId) {
+            alert('Invalid schedule');
+            return;
+        }
+        window.location.href = `/Booking/SelectSeats/${scheduleId}`;
+    }
+
+    // Load locations on page load
+    window.addEventListener('DOMContentLoaded', loadLocations);
+</script>
