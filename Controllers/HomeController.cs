@@ -66,7 +66,7 @@ public class HomeController : Controller
 
             // Filter by route - use exact match first, then fallback to partial match
             var buses = allSchedulesForDate
-                .Where(s => 
+                .Where(s =>
                     (s.Route!.FromLocation.ToLower() == fromLoc && s.Route.ToLocation.ToLower() == toLoc) ||
                     (s.Route!.FromLocation.ToLower().Contains(fromLoc) && s.Route.ToLocation.ToLower().Contains(toLoc))
                 )
@@ -150,10 +150,10 @@ public class HomeController : Controller
                 success = true,
                 routes = routes.Select(r => new { r.RouteId, r.FromLocation, r.ToLocation, r.Distance, r.EstimatedTime }),
                 buses = buses.Select(b => new { b.BusId, b.NumberPlate, b.NumberOfSeats, b.SeatStructure, b.Condition }),
-                schedules = schedules.Select(s => new 
-                { 
-                    s.ScheduleId, 
-                    s.ScheduledDate, 
+                schedules = schedules.Select(s => new
+                {
+                    s.ScheduleId,
+                    s.ScheduledDate,
                     s.DepartureTime,
                     BusNumberPlate = s.Bus!.NumberPlate,
                     FromLocation = s.Route!.FromLocation,

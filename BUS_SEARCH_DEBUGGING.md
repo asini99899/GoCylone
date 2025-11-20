@@ -1,6 +1,7 @@
 # Bus Search Not Showing Results - Debugging Guide
 
 ## Problem
+
 When searching for buses, the system always shows "No buses found" even though schedules should exist.
 
 ## Root Causes
@@ -17,29 +18,63 @@ The issue could be one of these:
 ### Step 1: Use Debug Endpoint
 
 Open your browser and visit:
+
 ```
 http://localhost:5020/Home/DebugData
 ```
 
 This will show you:
+
 - All Routes in the database
-- All Buses in the database  
+- All Buses in the database
 - All Schedules with their linked Route and Bus information
 
 **Example output:**
+
 ```json
 {
   "success": true,
   "routes": [
-    {"routeId": 1, "fromLocation": "Colombo", "toLocation": "Kandy", "distance": 120, "estimatedTime": "3 hours"},
-    {"routeId": 2, "fromLocation": "Kandy", "toLocation": "Galle", "distance": 140, "estimatedTime": "4 hours"}
+    {
+      "routeId": 1,
+      "fromLocation": "Colombo",
+      "toLocation": "Kandy",
+      "distance": 120,
+      "estimatedTime": "3 hours"
+    },
+    {
+      "routeId": 2,
+      "fromLocation": "Kandy",
+      "toLocation": "Galle",
+      "distance": 140,
+      "estimatedTime": "4 hours"
+    }
   ],
   "buses": [
-    {"busId": 1, "numberPlate": "ABC-1234", "numberOfSeats": 50, "seatStructure": "2*3", "condition": "Good"},
-    {"busId": 2, "numberPlate": "XYZ-5678", "numberOfSeats": 45, "seatStructure": "2*2", "condition": "Excellent"}
+    {
+      "busId": 1,
+      "numberPlate": "ABC-1234",
+      "numberOfSeats": 50,
+      "seatStructure": "2*3",
+      "condition": "Good"
+    },
+    {
+      "busId": 2,
+      "numberPlate": "XYZ-5678",
+      "numberOfSeats": 45,
+      "seatStructure": "2*2",
+      "condition": "Excellent"
+    }
   ],
   "schedules": [
-    {"scheduleId": 1, "scheduledDate": "2025-11-20", "departureTime": "06:00:00", "busNumberPlate": "ABC-1234", "fromLocation": "Colombo", "toLocation": "Kandy"}
+    {
+      "scheduleId": 1,
+      "scheduledDate": "2025-11-20",
+      "departureTime": "06:00:00",
+      "busNumberPlate": "ABC-1234",
+      "fromLocation": "Colombo",
+      "toLocation": "Kandy"
+    }
   ]
 }
 ```
@@ -51,7 +86,7 @@ If the debug endpoint shows empty arrays, you need to add test data. Run this SQ
 ```sql
 -- Add Routes
 INSERT INTO Routes (FromLocation, ToLocation, Distance, EstimatedTime)
-VALUES 
+VALUES
   ('Colombo', 'Kandy', 120, '3 hours'),
   ('Kandy', 'Galle', 140, '4 hours'),
   ('Colombo', 'Galle', 240, '6 hours'),
@@ -60,7 +95,7 @@ VALUES
 
 -- Add Buses
 INSERT INTO Buses (NumberPlate, NumberOfSeats, SeatStructure, Condition)
-VALUES 
+VALUES
   ('ABC-1234', 50, '2*3', 'Good'),
   ('XYZ-5678', 45, '2*2', 'Excellent'),
   ('DEF-9012', 52, '2*3', 'Good'),
@@ -69,21 +104,21 @@ VALUES
 
 -- Add Schedules for TODAY and FUTURE DATES
 INSERT INTO Schedules (BusId, RouteId, ScheduledDate, DepartureTime)
-VALUES 
+VALUES
   -- Colombo to Kandy schedules (today and future)
   (1, 1, CAST(GETDATE() AS DATE), '06:00:00'),
   (2, 1, CAST(GETDATE() AS DATE), '08:30:00'),
   (3, 1, CAST(GETDATE() AS DATE), '14:00:00'),
   (4, 1, CAST(GETDATE() + 1 AS DATE), '06:00:00'),
-  
+
   -- Kandy to Galle schedules
   (1, 2, CAST(GETDATE() AS DATE), '10:00:00'),
   (2, 2, CAST(GETDATE() AS DATE), '15:30:00'),
-  
+
   -- Colombo to Galle schedules
   (3, 3, CAST(GETDATE() AS DATE), '07:00:00'),
   (5, 3, CAST(GETDATE() AS DATE), '16:00:00'),
-  
+
   -- Matara to Colombo schedules
   (2, 5, CAST(GETDATE() AS DATE), '05:30:00'),
   (4, 5, CAST(GETDATE() AS DATE), '18:00:00');
@@ -110,11 +145,13 @@ VALUES
 Open Developer Tools (F12) and check the Console tab for:
 
 1. **Sent payload:**
+
 ```javascript
 {fromLocation: "Colombo", toLocation: "Kandy", searchDate: "2025-11-20T00:00:00.000Z"}
 ```
 
 2. **Response:**
+
 ```javascript
 {success: true, data: [...buses...], message: "Found 3 buses"}
 ```
@@ -137,17 +174,20 @@ Open Developer Tools (F12) and check the Console tab for:
 ## Advanced: View All Endpoints
 
 **Check locations:**
+
 ```
 GET http://localhost:5020/Home/GetLocations
 ```
 
 **Search buses:**
+
 ```
 POST http://localhost:5020/Home/SearchBuses
 Body: {"fromLocation":"Colombo","toLocation":"Kandy","searchDate":"2025-11-20T00:00:00Z"}
 ```
 
 **Debug data:**
+
 ```
 GET http://localhost:5020/Home/DebugData
 ```

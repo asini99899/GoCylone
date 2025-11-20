@@ -383,7 +383,7 @@
 
 <script>
     const scheduleId = @Model.ScheduleId;
-    const selectedSeats = [@if (Model.SelectedSeats != null && Model.SelectedSeats.Count > 0) { @string.Join(", ", Model.SelectedSeats); }];
+    const selectedSeats = [@if (Model.SelectedSeats != null && Model.SelectedSeats.Count > 0) { @Html.Raw(string.Join(", ", Model.SelectedSeats)) }];
     const pickupLocation = '@Model.PickupLocation';
     const dropLocation = '@Model.DropLocation';
     const totalFare = @Model.TotalFare.ToString("0.00");
