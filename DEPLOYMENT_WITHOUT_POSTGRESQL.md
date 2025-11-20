@@ -11,6 +11,7 @@ Your application uses SQL Server, which is fully supported on cloud platforms. H
 Azure is Microsoft's cloud platform and **perfectly supports SQL Server and ASP.NET Core**.
 
 ### Prerequisites
+
 - Azure account (free tier with $200 credits)
 - Azure CLI or Azure Portal
 - Your code in Git
@@ -18,12 +19,14 @@ Azure is Microsoft's cloud platform and **perfectly supports SQL Server and ASP.
 ### Quick Deployment Steps
 
 #### 1. **Create Azure Account**
+
 ```bash
 # Go to: https://azure.microsoft.com/en-us/free/
 # Sign up for free account with $200 credits
 ```
 
 #### 2. **Install Azure CLI**
+
 ```bash
 # Download from: https://learn.microsoft.com/en-us/cli/azure/install-azure-cli
 # Or use package manager:
@@ -31,16 +34,19 @@ choco install azure-cli
 ```
 
 #### 3. **Login to Azure**
+
 ```bash
 az login
 ```
 
 #### 4. **Create Resource Group**
+
 ```bash
 az group create --name GoCylone-RG --location "East US"
 ```
 
 #### 5. **Create SQL Server & Database**
+
 ```bash
 # Create SQL Server
 az sql server create \
@@ -59,6 +65,7 @@ az sql db create \
 ```
 
 #### 6. **Allow Your IP to Connect**
+
 ```bash
 # Get your public IP
 curl https://api.ipify.org
@@ -81,7 +88,9 @@ az sql server firewall-rule create \
 ```
 
 #### 7. **Update Your Connection String**
+
 Get your connection string:
+
 ```bash
 az sql db show-connection-string \
   --client sqlcmd \
@@ -90,11 +99,13 @@ az sql db show-connection-string \
 ```
 
 It will look like:
+
 ```
 Server=tcp:gocylone-server.database.windows.net,1433;Initial Catalog=GoCyloneDB;Persist Security Info=False;User ID=sqladmin;Password=MyPassword123!@;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;
 ```
 
 #### 8. **Create App Service Plan**
+
 ```bash
 # Create App Service Plan
 az appservice plan create \
@@ -112,6 +123,7 @@ az webapp create \
 ```
 
 #### 9. **Configure Connection String in App Service**
+
 ```bash
 az webapp config appsettings set \
   --name gocylone-app \
@@ -122,6 +134,7 @@ az webapp config appsettings set \
 #### 10. **Deploy Your Code**
 
 **Option A: Using Git**
+
 ```bash
 # Configure local Git deployment
 az webapp deployment user set --user-name YOUR_USERNAME --password YOUR_PASSWORD
@@ -141,6 +154,7 @@ git push azure main
 ```
 
 **Option B: Using Visual Studio (Easiest)**
+
 1. Right-click project → Publish
 2. Select "Azure"
 3. Select "Azure App Service (Linux)"
@@ -148,6 +162,7 @@ git push azure main
 5. Click Publish
 
 **Option C: Using Azure CLI ZIP Deploy**
+
 ```bash
 # Publish to local folder
 dotnet publish -c Release -o ./publish
@@ -163,6 +178,7 @@ az webapp deployment source config-zip \
 ```
 
 #### 11. **Run Database Migrations**
+
 ```bash
 # SSH into app service and run migrations
 az webapp remote-connection create \
@@ -173,6 +189,7 @@ az webapp remote-connection create \
 ```
 
 #### 12. **Access Your App**
+
 Your app will be available at: `https://gocylone-app.azurewebsites.net`
 
 ---
@@ -221,6 +238,7 @@ Your app will be at: `https://your-app.ondigitalocean.app`
 ## **Option 4: Host on Your Own VPS with SQL Server**
 
 If you want full control, you can use a VPS like:
+
 - DigitalOcean Droplets
 - Linode
 - AWS EC2
@@ -232,12 +250,12 @@ Install your own SQL Server and deploy the app.
 
 ## **Comparison Table**
 
-| Platform | Cost | SQL Server Support | Ease | Recommendation |
-|----------|------|-------------------|------|-----------------|
-| **Azure** | Free tier + pay-as-you-go | ✅ Native | Easy | ⭐⭐⭐⭐⭐ |
-| **AWS EB** | Free tier + pay-as-you-go | ✅ RDS | Medium | ⭐⭐⭐⭐ |
-| **DigitalOcean** | $5-$12/month | ✅ Self-hosted | Medium | ⭐⭐⭐⭐ |
-| **VPS** | $5-$20/month | ✅ Self-hosted | Hard | ⭐⭐⭐ |
+| Platform         | Cost                      | SQL Server Support | Ease   | Recommendation |
+| ---------------- | ------------------------- | ------------------ | ------ | -------------- |
+| **Azure**        | Free tier + pay-as-you-go | ✅ Native          | Easy   | ⭐⭐⭐⭐⭐     |
+| **AWS EB**       | Free tier + pay-as-you-go | ✅ RDS             | Medium | ⭐⭐⭐⭐       |
+| **DigitalOcean** | $5-$12/month              | ✅ Self-hosted     | Medium | ⭐⭐⭐⭐       |
+| **VPS**          | $5-$20/month              | ✅ Self-hosted     | Hard   | ⭐⭐⭐         |
 
 ---
 
@@ -246,6 +264,7 @@ Install your own SQL Server and deploy the app.
 ### **Use Azure (Option 1)**
 
 **Why?**
+
 - ✅ Free tier with $200 credits
 - ✅ Perfect for SQL Server + .NET
 - ✅ Automatic scaling
@@ -353,6 +372,7 @@ app.Run();
 ### Step 2: Create appsettings files
 
 **appsettings.json** (local):
+
 ```json
 {
   "ConnectionStrings": {
@@ -368,6 +388,7 @@ app.Run();
 ```
 
 **appsettings.Production.json** (Azure):
+
 ```json
 {
   "ConnectionStrings": {

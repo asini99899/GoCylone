@@ -1,6 +1,7 @@
 # GoCylone Deployment Guide
 
 ## ⚠️ Important Note
+
 **Vercel does NOT support .NET applications.** Vercel is designed for Node.js, Python, Go, and other serverless languages.
 
 For your ASP.NET Core application, you have better options:
@@ -12,6 +13,7 @@ For your ASP.NET Core application, you have better options:
 Railway supports .NET applications natively and is very beginner-friendly.
 
 ### Prerequisites
+
 - GitHub account
 - Railway account (free at railway.app)
 - Your code pushed to GitHub
@@ -79,6 +81,7 @@ git push -u origin main
 #### 6. **Configure Environment Variables**
 
 In Railway dashboard, add these variables:
+
 ```
 DATABASE_URL = (your connection string from step 5)
 ASPNETCORE_ENVIRONMENT = Production
@@ -95,6 +98,7 @@ Railway auto-deploys on every push to main branch!
 Microsoft Azure is perfect for ASP.NET Core apps.
 
 ### Prerequisites
+
 - Microsoft Azure account
 - Visual Studio or VS Code
 - Azure CLI
@@ -102,6 +106,7 @@ Microsoft Azure is perfect for ASP.NET Core apps.
 ### Step-by-Step Deployment
 
 #### 1. **Create Azure Account**
+
 - Go to [azure.microsoft.com](https://azure.microsoft.com)
 - Sign up (free tier includes $200 credits)
 
@@ -164,6 +169,7 @@ git push azure main
 Heroku is simple but no longer has a free tier.
 
 ### Prerequisites
+
 - Heroku account
 - Heroku CLI
 - Git
@@ -195,6 +201,7 @@ git push heroku main
 Similar to Railway but with more control.
 
 ### Prerequisites
+
 - DigitalOcean account
 - GitHub repository
 
@@ -265,6 +272,7 @@ dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL
 ## Recommended Path
 
 **For beginners: Railway.app**
+
 - ✅ Easiest setup
 - ✅ Auto-deploys from GitHub
 - ✅ Built-in database support
@@ -272,6 +280,7 @@ dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL
 - ✅ No configuration needed
 
 **For production: Azure**
+
 - ✅ Enterprise-grade reliability
 - ✅ Free tier with credits
 - ✅ Excellent Microsoft support
@@ -284,4 +293,3 @@ dotnet add package Npgsql.EntityFrameworkCore.PostgreSQL
 1. Railway: https://docs.railway.app/
 2. Azure: https://learn.microsoft.com/en-us/azure/app-service/
 3. .NET Deployment: https://learn.microsoft.com/en-us/dotnet/core/deploying/
-

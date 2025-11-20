@@ -5,23 +5,25 @@ Before pushing, you MUST create the repository on GitHub.com
 ## Steps to Create Repository on GitHub:
 
 ### 1. Visit GitHub Create Repository Page
+
 Open this link in your browser:
 https://github.com/new
 
 ### 2. Fill in Repository Details
 
-| Field | Value |
-|-------|-------|
-| **Repository name** | `GoCylone` |
-| **Description** | `ASP.NET Core Bus Booking System` |
-| **Visibility** | Select "Public" or "Private" |
-| **Initialize repository** | ❌ UNCHECK - "Add a README file" |
-| **Add .gitignore** | ❌ UNCHECK |
-| **Add a license** | ❌ UNCHECK |
+| Field                     | Value                             |
+| ------------------------- | --------------------------------- |
+| **Repository name**       | `GoCylone`                        |
+| **Description**           | `ASP.NET Core Bus Booking System` |
+| **Visibility**            | Select "Public" or "Private"      |
+| **Initialize repository** | ❌ UNCHECK - "Add a README file"  |
+| **Add .gitignore**        | ❌ UNCHECK                        |
+| **Add a license**         | ❌ UNCHECK                        |
 
 ### 3. Click "Create repository"
 
 You will see a page with commands. Look for:
+
 ```
 git remote add origin https://github.com/asini99899/GoCylone.git
 ```
@@ -31,6 +33,7 @@ git remote add origin https://github.com/asini99899/GoCylone.git
 ## After Creating the Repository
 
 Your repository URL will be:
+
 ```
 https://github.com/asini99899/GoCylone
 ```

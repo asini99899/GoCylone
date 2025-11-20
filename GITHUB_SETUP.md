@@ -39,6 +39,7 @@ git push -u origin main
 When you run `git push`, you may be prompted to authenticate. You have two options:
 
 ### Option A: Personal Access Token (Recommended)
+
 1. Go to https://github.com/settings/tokens
 2. Click **"Generate new token"** → **"Generate new token (classic)"**
 3. Configure:
@@ -50,10 +51,11 @@ When you run `git push`, you may be prompted to authenticate. You have two optio
 6. When Git asks for password, paste the token
 
 ### Option B: SSH Key
+
 1. Generate SSH key: `ssh-keygen -t ed25519 -C "madubahashiniashini@gmail.com"`
 2. Press Enter for all prompts to use default location
 3. Add key to GitHub: https://github.com/settings/ssh/new
-4. Change remote to SSH: 
+4. Change remote to SSH:
    ```bash
    git remote set-url origin git@github.com:asini99899/GoCylone.git
    ```
@@ -74,6 +76,7 @@ After pushing, visit https://github.com/asini99899/GoCylone to verify your code 
 ## Future Pushes
 
 For future updates, simply run:
+
 ```bash
 git add .
 git commit -m "Your message here"
@@ -83,5 +86,6 @@ git push
 ---
 
 **Need Help?**
+
 - GitHub Docs: https://docs.github.com/
 - Git Help: https://git-scm.com/doc
