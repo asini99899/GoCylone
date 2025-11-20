@@ -560,11 +560,11 @@
 
         const fromLocation = document.getElementById('fromLocation').value.trim();
         const toLocation = document.getElementById('toLocation').value.trim();
-        const searchDate = document.getElementById('searchDate').value;
+        const searchDateString = document.getElementById('searchDate').value;
 
-        console.log('Search params:', { fromLocation, toLocation, searchDate });
+        console.log('Search params:', { fromLocation, toLocation, searchDateString });
 
-        if (!fromLocation || !toLocation || !searchDate) {
+        if (!fromLocation || !toLocation || !searchDateString) {
             showMessage('Please fill all fields', 'error');
             return;
         }
@@ -574,6 +574,10 @@
         searchBtn.innerHTML = '<span class="spinner"></span> ' + translateText('searching');
 
         try {
+            // Convert date string to proper DateTime format
+            const [year, month, day] = searchDateString.split('-');
+            const searchDate = new Date(year, month - 1, day).toISOString();
+
             const payload = {
                 fromLocation: fromLocation,
                 toLocation: toLocation,
@@ -590,6 +594,9 @@
                 body: JSON.stringify(payload)
             });
 
+            console.log('Response status:', response.status);
+            console.log('Response ok:', response.ok);
+
             const result = await response.json();
 
             console.log('Response:', result);
@@ -602,7 +609,9 @@
                 document.getElementById('resultsContainer').innerHTML = '';
             }
         } catch (error) {
-            console.error('Error:', error);
+            console.error('Fetch Error:', error);
+            console.error('Error message:', error.message);
+            console.error('Error stack:', error.stack);
             showMessage('Error searching buses: ' + error.message, 'error');
             document.getElementById('resultsContainer').innerHTML = '';
         } finally {

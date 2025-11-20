@@ -32,8 +32,11 @@ public class HomeController : Controller
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(request?.FromLocation) || string.IsNullOrWhiteSpace(request?.ToLocation))
+            _logger.LogInformation($"SearchBuses called with: FromLocation={request?.FromLocation}, ToLocation={request?.ToLocation}, SearchDate={request?.SearchDate}");
+
+            if (request == null || string.IsNullOrWhiteSpace(request.FromLocation) || string.IsNullOrWhiteSpace(request.ToLocation))
             {
+                _logger.LogWarning("Invalid search parameters");
                 return BadRequest(new { success = false, message = "From and To locations are required" });
             }
 
@@ -41,6 +44,8 @@ public class HomeController : Controller
             var fromLoc = request.FromLocation.Trim();
             var toLoc = request.ToLocation.Trim();
             var searchDate = request.SearchDate;
+
+            _logger.LogInformation($"Searching for buses: From={fromLoc}, To={toLoc}, Date={searchDate:yyyy-MM-dd}");
 
             var buses = await _context.Schedules
                 .Where(s => s.Route!.FromLocation.ToLower().Contains(fromLoc.ToLower()) &&
@@ -65,6 +70,8 @@ public class HomeController : Controller
                 })
                 .ToListAsync();
 
+            _logger.LogInformation($"Found {buses.Count} buses");
+
             if (!buses.Any())
             {
                 return Ok(new { success = true, data = buses, message = "No buses found for the selected route and date" });
@@ -75,7 +82,7 @@ public class HomeController : Controller
         catch (Exception ex)
         {
             _logger.LogError(ex, "Error searching buses");
-            return BadRequest(new { success = false, message = "Error searching buses", error = ex.Message });
+            return BadRequest(new { success = false, message = "Error searching buses: " + ex.Message, error = ex.Message });
         }
     }
 
