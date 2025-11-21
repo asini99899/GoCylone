@@ -1,0 +1,849 @@
+@model List<Review>
+
+@{
+    ViewData["Title"] = "App Reviews";
+}
+
+<style>
+    .review-container {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        padding: 30px 0;
+    }
+
+    .review-card {
+        background: white;
+        border-radius: 10px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+    }
+
+    .review-header {
+        color: #667eea;
+        font-size: 32px;
+        font-weight: bold;
+        margin-bottom: 30px;
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .stats-section {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 20px;
+        margin-bottom: 40px;
+    }
+
+    .stat-item {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+    }
+
+    .stat-value {
+        font-size: 28px;
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    .stat-label {
+        font-size: 14px;
+        opacity: 0.9;
+    }
+
+    .add-review-section {
+        background: #f5f5f5;
+        padding: 25px;
+        border-radius: 10px;
+        margin-bottom: 40px;
+        border-left: 5px solid #667eea;
+    }
+
+    .form-section-title {
+        font-size: 18px;
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 8px;
+    }
+
+    .form-input,
+    .form-textarea {
+        width: 100%;
+        padding: 12px;
+        border: 2px solid #ddd;
+        border-radius: 5px;
+        font-size: 14px;
+        box-sizing: border-box;
+        font-family: inherit;
+    }
+
+    .form-input:focus,
+    .form-textarea:focus {
+        border-color: #667eea;
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .form-textarea {
+        resize: vertical;
+        min-height: 120px;
+    }
+
+    .star-rating {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+
+    .star {
+        font-size: 32px;
+        cursor: pointer;
+        user-select: none;
+        transition: transform 0.2s;
+    }
+
+    .star:hover,
+    .star.active {
+        transform: scale(1.2);
+    }
+
+    .star.active {
+        color: #ffc107;
+    }
+
+    .star.inactive {
+        color: #ddd;
+    }
+
+    .btn {
+        padding: 12px 30px;
+        border: none;
+        border-radius: 5px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 14px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn-danger {
+        background: #dc3545;
+        color: white;
+        padding: 8px 16px;
+        font-size: 12px;
+    }
+
+    .btn-danger:hover {
+        background: #c82333;
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+        padding: 8px 16px;
+        font-size: 12px;
+        margin-right: 5px;
+    }
+
+    .btn-secondary:hover {
+        background: #5a6268;
+    }
+
+    .reviews-list {
+        margin-top: 40px;
+    }
+
+    .review-item {
+        background: white;
+        border: 2px solid #f0f0f0;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 20px;
+        transition: all 0.3s;
+    }
+
+    .review-item:hover {
+        border-color: #667eea;
+        box-shadow: 0 5px 20px rgba(102, 126, 234, 0.2);
+    }
+
+    .review-header-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: start;
+        margin-bottom: 15px;
+    }
+
+    .review-user-info {
+        flex: 1;
+    }
+
+    .review-user-name {
+        font-weight: bold;
+        color: #333;
+        font-size: 16px;
+        margin-bottom: 5px;
+    }
+
+    .review-date {
+        color: #999;
+        font-size: 12px;
+    }
+
+    .review-stars {
+        display: flex;
+        gap: 5px;
+        margin-bottom: 10px;
+    }
+
+    .review-star {
+        color: #ffc107;
+        font-size: 16px;
+    }
+
+    .review-title {
+        font-weight: 600;
+        color: #333;
+        font-size: 16px;
+        margin-bottom: 10px;
+    }
+
+    .review-comment {
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 15px;
+        font-size: 14px;
+    }
+
+    .review-actions {
+        display: flex;
+        gap: 10px;
+    }
+
+    .error-msg,
+    .success-msg {
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        display: none;
+    }
+
+    .error-msg {
+        background: #ffebee;
+        border: 1px solid #f5c6cb;
+        color: #c62828;
+    }
+
+    .error-msg.show {
+        display: block;
+    }
+
+    .success-msg {
+        background: #e8f5e9;
+        border: 1px solid #c8e6c9;
+        color: #2e7d32;
+    }
+
+    .success-msg.show {
+        display: block;
+    }
+
+    .login-prompt {
+        text-align: center;
+        padding: 40px;
+        background: #fff3e0;
+        border-radius: 10px;
+        border: 2px solid #ffb74d;
+    }
+
+    .login-prompt-text {
+        color: #e65100;
+        font-size: 16px;
+        margin-bottom: 20px;
+    }
+
+    .edit-mode {
+        background: #f0f0f0;
+        padding: 20px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+
+    .edit-form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+    }
+
+    .form-grid-full {
+        grid-column: 1 / -1;
+    }
+
+    .no-reviews {
+        text-align: center;
+        padding: 40px;
+        color: #999;
+    }
+
+    .no-reviews-icon {
+        font-size: 48px;
+        margin-bottom: 20px;
+    }
+
+    .star-distribution {
+        margin-top: 30px;
+        padding-top: 20px;
+        border-top: 2px solid #f0f0f0;
+    }
+
+    .distribution-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 10px;
+    }
+
+    .distribution-stars {
+        width: 60px;
+        color: #ffc107;
+    }
+
+    .distribution-bar {
+        flex: 1;
+        height: 20px;
+        background: #f0f0f0;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .distribution-bar-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+    }
+
+    .distribution-count {
+        width: 40px;
+        text-align: right;
+        color: #666;
+        font-size: 12px;
+    }
+
+    .loading-spinner {
+        display: inline-block;
+        width: 14px;
+        height: 14px;
+        border: 2px solid #f3f3f3;
+        border-top: 2px solid #667eea;
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+        margin-right: 8px;
+    }
+
+    @@keyframes spin {
+        0% {
+            transform: rotate(0deg);
+        }
+
+        100% {
+            transform: rotate(360deg);
+        }
+    }
+</style>
+
+<div class="review-container">
+    <div class="container">
+        <div class="review-card">
+            <div class="review-header">
+                ⭐ App Reviews & Ratings
+            </div>
+
+            <div id="errorMsg" class="error-msg"></div>
+            <div id="successMsg" class="success-msg"></div>
+
+            <!-- Statistics Section -->
+            <div class="stats-section" id="statsSection">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalReviews">0</div>
+                    <div class="stat-label">Total Reviews</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="avgRating">0</div>
+                    <div class="stat-label">Average Rating</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="fiveStarCount">0</div>
+                    <div class="stat-label">5 Star Reviews</div>
+                </div>
+            </div>
+
+            <!-- Add/Edit Review Section -->
+            <div class="add-review-section" id="reviewFormSection" style="display: none;">
+                <div class="form-section-title" id="formTitle">✍️ Share Your Review</div>
+
+                <form id="reviewForm" onsubmit="submitReview(event)">
+                    <div class="form-group">
+                        <label class="form-label">Rate the App</label>
+                        <div class="star-rating" id="starRating">
+                            <span class="star inactive" data-rating="1">★</span>
+                            <span class="star inactive" data-rating="2">★</span>
+                            <span class="star inactive" data-rating="3">★</span>
+                            <span class="star inactive" data-rating="4">★</span>
+                            <span class="star inactive" data-rating="5">★</span>
+                        </div>
+                        <input type="hidden" id="selectedStars" value="0">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="reviewTitle">Review Title *</label>
+                        <input type="text" class="form-input" id="reviewTitle" placeholder="e.g., Great app, easy to use"
+                            required maxlength="200">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="reviewComment">Your Review (Optional)</label>
+                        <textarea class="form-textarea" id="reviewComment"
+                            placeholder="Share your experience with the app..."
+                            maxlength="2000"></textarea>
+                    </div>
+
+                    <div style="display: flex; gap: 10px;">
+                        <button type="submit" class="btn btn-primary" id="submitBtn">Submit Review</button>
+                        <button type="button" class="btn btn-secondary" onclick="cancelEdit()"
+                            id="cancelBtn">Cancel</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Login Prompt -->
+            <div id="loginPrompt" class="login-prompt" style="display: none;">
+                <div class="login-prompt-text">
+                    🔐 Please login to submit a review
+                </div>
+                <a href="/Auth/Login" class="btn btn-primary">Login Now</a>
+            </div>
+
+            <!-- Reviews List -->
+            <div class="reviews-list" id="reviewsList">
+                <div class="no-reviews">
+                    <div class="no-reviews-icon">📭</div>
+                    <div>No reviews yet. Be the first to review!</div>
+                </div>
+            </div>
+
+            <!-- Star Distribution -->
+            <div id="starDistribution" class="star-distribution" style="display: none;">
+                <div style="font-weight: bold; margin-bottom: 15px;">Rating Distribution</div>
+                <div id="distributionContent"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentUserId = '@(Context.Session.GetString("UserId") ?? "")';
+    let userReviewId = null;
+    let isEditMode = false;
+
+    // Initialize page
+    async function initializePage() {
+        console.log('Initializing reviews page...');
+        console.log('Current user ID:', currentUserId);
+
+        // Load stats
+        await loadStats();
+
+        // Load user's review if logged in
+        if (currentUserId) {
+            await loadUserReview();
+            document.getElementById('reviewFormSection').style.display = 'block';
+            document.getElementById('loginPrompt').style.display = 'none';
+        } else {
+            document.getElementById('reviewFormSection').style.display = 'none';
+            document.getElementById('loginPrompt').style.display = 'block';
+        }
+
+        // Load all reviews
+        await loadAllReviews();
+
+        // Setup star rating
+        setupStarRating();
+    }
+
+    // Load stats
+    async function loadStats() {
+        try {
+            const response = await fetch('/Review/GetStats');
+            const result = await response.json();
+
+            if (result.success) {
+                document.getElementById('totalReviews').textContent = result.totalReviews;
+                document.getElementById('avgRating').textContent = result.averageRating;
+                document.getElementById('fiveStarCount').textContent = result.starsDistribution[5] || 0;
+
+                // Show star distribution
+                if (result.totalReviews > 0) {
+                    displayStarDistribution(result.starsDistribution, result.totalReviews);
+                }
+            }
+        } catch (error) {
+            console.error('Error loading stats:', error);
+        }
+    }
+
+    // Display star distribution
+    function displayStarDistribution(distribution, total) {
+        const distSection = document.getElementById('starDistribution');
+        const content = document.getElementById('distributionContent');
+        content.innerHTML = '';
+
+        for (let i = 5; i >= 1; i--) {
+            const count = distribution[i] || 0;
+            const percentage = (count / total) * 100;
+
+            const item = document.createElement('div');
+            item.className = 'distribution-item';
+            item.innerHTML = `
+                <div class="distribution-stars">${i}★</div>
+                <div class="distribution-bar">
+                    <div class="distribution-bar-fill" style="width: ${percentage}%"></div>
+                </div>
+                <div class="distribution-count">${count}</div>
+            `;
+            content.appendChild(item);
+        }
+
+        distSection.style.display = 'block';
+    }
+
+    // Load user's review
+    async function loadUserReview() {
+        try {
+            const response = await fetch('/Review/UserReview');
+            const result = await response.json();
+
+            if (result.success && result.review) {
+                userReviewId = result.review.reviewId;
+                document.getElementById('reviewTitle').value = result.review.title;
+                document.getElementById('reviewComment').value = result.review.comment;
+                document.getElementById('selectedStars').value = result.review.stars;
+
+                // Update star display
+                updateStarDisplay(result.review.stars);
+
+                // Update button text
+                document.getElementById('formTitle').textContent = '✏️ Edit Your Review';
+                document.getElementById('submitBtn').textContent = 'Update Review';
+            }
+        } catch (error) {
+            console.error('Error loading user review:', error);
+        }
+    }
+
+    // Load all reviews
+    async function loadAllReviews() {
+        try {
+            const response = await fetch('/Review/Index');
+            const html = await response.text();
+
+            // Parse and extract reviews from the page
+            // Since we're doing full page load, we'll just fetch JSON instead
+            fetchAllReviews();
+        } catch (error) {
+            console.error('Error loading reviews:', error);
+        }
+    }
+
+    // Fetch all reviews as JSON
+    async function fetchAllReviews() {
+        try {
+            const response = await fetch('/api/reviews');
+            if (response.ok) {
+                const reviews = await response.json();
+                displayReviews(reviews);
+            } else {
+                // Fallback: Display no reviews message
+                document.getElementById('reviewsList').innerHTML = `
+                    <div class="no-reviews">
+                        <div class="no-reviews-icon">📭</div>
+                        <div>No reviews yet. Be the first to review!</div>
+                    </div>
+                `;
+            }
+        } catch (error) {
+            console.error('Error fetching reviews:', error);
+        }
+    }
+
+    // Setup star rating interaction
+    function setupStarRating() {
+        const stars = document.querySelectorAll('#starRating .star');
+        stars.forEach(star => {
+            star.addEventListener('click', function() {
+                const rating = this.getAttribute('data-rating');
+                document.getElementById('selectedStars').value = rating;
+                updateStarDisplay(rating);
+            });
+
+            star.addEventListener('mouseover', function() {
+                const rating = this.getAttribute('data-rating');
+                highlightStars(rating);
+            });
+        });
+
+        document.getElementById('starRating').addEventListener('mouseleave', function() {
+            const selected = document.getElementById('selectedStars').value;
+            updateStarDisplay(selected);
+        });
+    }
+
+    // Update star display
+    function updateStarDisplay(rating) {
+        const stars = document.querySelectorAll('#starRating .star');
+        stars.forEach(star => {
+            const starRating = star.getAttribute('data-rating');
+            if (starRating <= rating) {
+                star.classList.remove('inactive');
+                star.classList.add('active');
+            } else {
+                star.classList.remove('active');
+                star.classList.add('inactive');
+            }
+        });
+    }
+
+    // Highlight stars on hover
+    function highlightStars(rating) {
+        const stars = document.querySelectorAll('#starRating .star');
+        stars.forEach(star => {
+            const starRating = star.getAttribute('data-rating');
+            if (starRating <= rating) {
+                star.classList.add('active');
+                star.classList.remove('inactive');
+            } else {
+                star.classList.remove('active');
+                star.classList.add('inactive');
+            }
+        });
+    }
+
+    // Submit review
+    async function submitReview(event) {
+        event.preventDefault();
+
+        const stars = parseInt(document.getElementById('selectedStars').value);
+        const title = document.getElementById('reviewTitle').value.trim();
+        const comment = document.getElementById('reviewComment').value.trim();
+
+        if (stars === 0 || !title) {
+            showError('Please provide a rating and title');
+            return;
+        }
+
+        const button = document.getElementById('submitBtn');
+        button.disabled = true;
+        button.innerHTML = '<span class="loading-spinner"></span>Processing...';
+
+        try {
+            const payload = {
+                stars: stars,
+                title: title,
+                comment: comment
+            };
+
+            let url = '/Review/AddReview';
+            let method = 'POST';
+
+            if (userReviewId) {
+                url = `/Review/EditReview/${userReviewId}`;
+                method = 'PUT';
+            }
+
+            const response = await fetch(url, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                showSuccess(result.message);
+                setTimeout(() => {
+                    location.reload();
+                }, 1500);
+            } else {
+                showError(result.message);
+                button.disabled = false;
+                button.innerHTML = userReviewId ? 'Update Review' : 'Submit Review';
+            }
+        } catch (error) {
+            console.error('Error submitting review:', error);
+            showError('Error submitting review: ' + error.message);
+            button.disabled = false;
+            button.innerHTML = userReviewId ? 'Update Review' : 'Submit Review';
+        }
+    }
+
+    // Cancel edit
+    function cancelEdit() {
+        isEditMode = false;
+        location.reload();
+    }
+
+    // Delete review
+    async function deleteReview(reviewId) {
+        if (!confirm('Are you sure you want to delete your review?')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/Review/DeleteReview/${reviewId}`, {
+                method: 'DELETE'
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                showSuccess(result.message);
+                setTimeout(() => {
+                    location.reload();
+                }, 1500);
+            } else {
+                showError(result.message);
+            }
+        } catch (error) {
+            console.error('Error deleting review:', error);
+            showError('Error deleting review: ' + error.message);
+        }
+    }
+
+    // Display reviews
+    function displayReviews(reviews) {
+        const reviewsList = document.getElementById('reviewsList');
+
+        if (!reviews || reviews.length === 0) {
+            reviewsList.innerHTML = `
+                <div class="no-reviews">
+                    <div class="no-reviews-icon">📭</div>
+                    <div>No reviews yet. Be the first to review!</div>
+                </div>
+            `;
+            return;
+        }
+
+        reviewsList.innerHTML = '';
+        reviews.forEach(review => {
+            const isUserReview = currentUserId && review.userId === parseInt(currentUserId);
+            const starsHtml = Array(review.stars).fill('<span class="review-star">★</span>').join('');
+            const emptyStarsHtml = Array(5 - review.stars).fill('<span class="review-star" style="color: #ddd;">★</span>').join('');
+
+            const reviewElement = document.createElement('div');
+            reviewElement.className = 'review-item';
+            reviewElement.innerHTML = `
+                <div class="review-header-info">
+                    <div class="review-user-info">
+                        <div class="review-user-name">👤 ${escapeHtml(review.user?.fullName || review.user?.userName || 'Anonymous')}</div>
+                        <div class="review-date">${formatDate(review.createdAt)}</div>
+                    </div>
+                    ${isUserReview ? `
+                        <div class="review-actions">
+                            <button class="btn btn-secondary" onclick="editReview(${review.reviewId})">✏️ Edit</button>
+                            <button class="btn btn-danger" onclick="deleteReview(${review.reviewId})">🗑️ Delete</button>
+                        </div>
+                    ` : ''}
+                </div>
+                <div class="review-stars">
+                    ${starsHtml}${emptyStarsHtml}
+                </div>
+                <div class="review-title">${escapeHtml(review.title)}</div>
+                ${review.comment ? `<div class="review-comment">${escapeHtml(review.comment)}</div>` : ''}
+            `;
+
+            reviewsList.appendChild(reviewElement);
+        });
+    }
+
+    // Edit review (placeholder for now - uses form above)
+    function editReview(reviewId) {
+        isEditMode = true;
+        window.scrollTo(0, 0);
+    }
+
+    // Show error message
+    function showError(message) {
+        const errorMsg = document.getElementById('errorMsg');
+        errorMsg.textContent = message;
+        errorMsg.classList.add('show');
+        setTimeout(() => {
+            errorMsg.classList.remove('show');
+        }, 5000);
+    }
+
+    // Show success message
+    function showSuccess(message) {
+        const successMsg = document.getElementById('successMsg');
+        successMsg.textContent = message;
+        successMsg.classList.add('show');
+        setTimeout(() => {
+            successMsg.classList.remove('show');
+        }, 5000);
+    }
+
+    // Format date
+    function formatDate(dateString) {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'short',
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    }
+
+    // Escape HTML
+    function escapeHtml(unsafe) {
+        return unsafe
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+    }
+
+    // API endpoint to get reviews as JSON
+    // This will be handled by a GET endpoint in the controller
+
+    // Initialize on load
+    window.addEventListener('DOMContentLoaded', initializePage);
+</script>

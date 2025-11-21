@@ -17,6 +17,7 @@ namespace GoCylone.Data
         public DbSet<Booking> Bookings { get; set; }
         public DbSet<BookingSeat> BookingSeats { get; set; }
         public DbSet<PaymentInfo> PaymentInfos { get; set; }
+        public DbSet<Review> Reviews { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -110,6 +111,20 @@ namespace GoCylone.Data
                     .WithOne(b => b.Payment)
                     .HasForeignKey<PaymentInfo>(e => e.BookingId)
                     .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // Review configuration
+            modelBuilder.Entity<Review>(entity =>
+            {
+                entity.HasKey(e => e.ReviewId);
+                entity.Property(e => e.Title).IsRequired().HasMaxLength(200);
+                entity.Property(e => e.Comment).HasMaxLength(2000);
+                entity.Property(e => e.Stars).IsRequired();
+                entity.HasOne(e => e.User)
+                    .WithMany()
+                    .HasForeignKey(e => e.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
+                entity.HasIndex(e => e.CreatedAt).IsDescending();
             });
         }
     }
